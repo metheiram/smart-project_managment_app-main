@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/project_tab.css' %}">
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <div class="flex h-screen ">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-1/5 p-6 flex flex-col justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-10 bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Dashboard</h1>
+                <nav>
+                    <ul class="space-y-6">
+                        <li><a href="{% url 'data:dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a></li>
+                        <li><a href="{% url 'project:project_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md font-semibold">Projects</a></li>
+                        <li><a href="{% url 'data:calander' %}" class="block hover:bg-purple-800 p-2 rounded-md">Calendar</a></li>
+                        <li><a href="{% url 'data:tasks_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Tasks</a></li>
+                        <li><a href="{% url 'data:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+                        <li><a href="{% url 'users:settings' %}" class="block hover:bg-purple-800 p-2 rounded-md">Settings</a></li>
+                    </ul>
+                </nav>
+                <div class="bg-purple-600 p-4 rounded-lg mt-12">
+                    <h3 class="font-bold text-lg">Go PRO</h3>
+                    <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+                    <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
+                </div>
+       
+            </div>
+            <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white hover:bg-blue-600  font-bold py-2 px-4 rounded-lg mt-6 flex items-center justify-center">
+                + Add Projects
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="w-4/5 p-8">
+            <!-- Navbar -->
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center space-x-20 ">
+                    <h1 class="text-2xl font-bold">Projects</h1>
+                    <div class="flex space-x-10 ">
+                        <button class="text-white-500 font-bold ">All</button>
+                        <button class="text-white-600  hover:text-purple-500 ">Current</button>
+                        <button class="text-white-600 hover:text-purple-500 ">Pending</button>
+                        <button class="text-white-600 hover:text-purple-500 ">Completed</button>
+                        <button class="text-white-600 hover:text-purple-500 ">Failed</button>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-white-600 hover:text-gray-800">
+                        <svg class="h-6 w-8 text-white-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
+                    </button>
+                    <div class="relative m-2 inline-flex items-center justify-center bg-gradient-to-r from-cyan-400 to-purple-500 p-2 text-white rounded-lg shadow-sm">
+                        <div class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-pink-700 text-xs p-1 rounded-full z-10"></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-5">
+                            <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full  hover:bg-blue-700  hover:scale-110 transition-transform duration-300">Create</button>
+                    <a href="{% url 'users:profile' %}"><i class="fa fa-user">
+                    <img src="/user-profile.jpg" alt="Profile" class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-300 text-white">
+                </i></a>
+                </div>
+                </div>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div class="grid grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="card bg-gray-800  p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold mr-4">S</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Sports Interactive</h3>
+                            <a href="#" class="text-blue-500 text-sm">sportsinteractive.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">Web resource which contains all about transfers in the world of sports.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-red-500 text-sm">2 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-4">H</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Homechoice</h3>
+                            <a href="#" class="text-blue-500 text-sm">homechoice.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">Resource that allows you to buy cheap accommodation in a steep place.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-yellow-500 text-sm">4 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-red-500 flex items-center justify-center text-white font-bold mr-4">B</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Big Money Real Estate</h3>
+                            <a href="#" class="text-blue-500 text-sm">bigmoneyrealestate.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">Agency that specializes in luxury real estate in Monte Carlo.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-red-500 text-sm">6 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-green-400 flex items-center justify-center text-white font-bold mr-4">T</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Tech Innovators</h3>
+                            <a href="#" class="text-blue-500 text-sm">techinnovators.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">Leading edge technology solutions for startups and SMEs.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-blue-500 text-sm">8 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">D</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Design Creatives</h3>
+                            <a href="#" class="text-blue-500 text-sm">designcreatives.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">A design agency specializing in branding and visual identity.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-purple-500 text-sm">12 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold mr-4">A</div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Art & Culture</h3>
+                            <a href="#" class="text-blue-500 text-sm">artculture.com</a>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white-600 mb-6">Art gallery showcasing contemporary and modern art.</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-orange-500 text-sm">14 days left</p>
+                        <div class="flex -space-x-2">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                            <img src="https://via.placeholder.com/40" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

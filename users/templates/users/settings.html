@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Project Management Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth background color transition */
+        .settings-item {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-900">
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="bg-gray-800 text-white w-64 min-h-screen p-6">
+            <!-- Logo -->
+            <div class="mb-8">
+                <img src="/logo.png" alt="Logo" class="w-12 h-12 mx-auto hover:scale-110 transition-transform duration-300">
+                <h1 class="text-center text-xl font-bold mt-2">PROJORA</h1>
+            </div>
+            <!-- Navigation Links -->
+            <nav>
+                <ul class="space-y-4">
+                    <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+                    <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
+                    <li><a href="{% url 'data:calander' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
+                    <li><a href="{% url 'data:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
+                    <li><a href="{% url 'data:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+                    <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
+                </ul>
+            </nav>
+
+            <!-- Upgrade Section -->
+            <div class="bg-purple-600 p-4 rounded-lg mt-12">
+                <h3 class="font-bold text-lg">Go PRO</h3>
+                <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+                <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
+            </div>
+        </aside>
+
+        
+        <div class="flex-1 p-6">
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl text-white font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
+                        Settings<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Panel</span>
+                    </h1>
+                </div>
+               <div class="flex items-center space-x-4">
+                    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full  hover:bg-blue-700  hover:scale-110 transition-transform duration-300">Create</button>
+                    <a href="{% url 'users:profile' %}"><i class="fa fa-user">
+                    <img src="/user-profile.jpg" alt="Profile" class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-300 text-white">
+                </i></a>
+                </div>
+            </header>
+
+            <!-- Settings Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- User Profile Settings -->
+                <div class="col-span-1 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Profile Settings</h2>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-white">Username</label>
+                            <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="Enter your username">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-white">Email</label>
+                            <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="Enter your email">
+                        </div>
+                        <div>
+                            <label for="profile-picture" class="block text-sm font-medium text-white">Profile Picture</label>
+                            <input type="file" id="profile-picture" name="profile-picture" class="mt-1 block w-full text-white">
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">Update Profile</button>
+                    </form>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="col-span-1 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Account Settings</h2>
+                    <form class="space-y-4">
+                        <div>
+                            <label for="current-password" class="block text-sm font-medium text-white">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="Enter current password">
+                        </div>
+                        <div>
+                            <label for="new-password" class="block text-sm font-medium text-white">New Password</label>
+                            <input type="password" id="new-password" name="new-password" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="Enter new password">
+                        </div>
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium text-white">Confirm New Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white" placeholder="Confirm new password">
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">Change Password</button>
+                    </form>
+                </div>
+
+                <!-- Preferences -->
+                <div class="col-span-2 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Preferences</h2>
+                    <form class="space-y-4">
+                        
+                        <div>
+                            <label for="notifications" class="block text-sm font-medium text-white">Notifications</label>
+                            <select id="notifications" name="notifications" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+                                <option value="enabled" selected>Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">Save Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/settings.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white overflow-hidden">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="bg-gray-800 text-white w-64 p-6 flex flex-col justify-between fixed left-0 top-0 bottom-0">
+      <div>
+        <!-- Profile Image -->
+        <div class="flex flex-col items-center mb-8">
+          <form method="POST" enctype="multipart/form-data" id="profile-pic-form">
+            {% csrf_token %}
+            <div class="relative">
+              <img src="{{ user.profile.profile_picture.url|default:'/static/default-profile.png' }}" alt="Profile" class="w-20 h-20 rounded-full border-4 border-purple-500 shadow-lg"/>
+              <label for="profile_picture" class="absolute bottom-0 right-0 bg-gray-900 rounded-full p-1 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </label>
+              <input type="file" id="profile_picture" name="profile_picture" class="hidden" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();"/>
+            </div>
+          </form>
+          <h1 class="text-lg font-semibold mt-3 text-center">{{ user.username }}</h1>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav>
+          <ul class="space-y-4">
+            <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+            <li><a href="{% url 'data:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
+            <li><a href="{% url 'data:calander' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
+            <li><a href="{% url 'data:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
+            <li><a href="{% url 'data:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+            <li><a href="{% url 'data:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md bg-purple-700"><span>Settings</span></a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Bottom Section: Logout & Upgrade -->
+      <div class="space-y-6">
+        <!-- Logout Button -->
+        <form method="post" action="{% url 'users:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300">
+            Logout
+          </button>
+        </form>
+
+        <!-- Upgrade Section -->
+        <div class="bg-purple-600 p-4 rounded-lg">
+          <h3 class="font-bold text-lg">Go PRO</h3>
+          <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+          <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold w-full">Upgrade Now</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 overflow-y-auto p-10">
+      <h1 class="text-3xl font-bold mb-6">Profile Settings</h1>
+      <div class="bg-gray-800 rounded-lg shadow-lg p-8">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+          {% csrf_token %}
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Username</label>
+            <input type="text" name="username" value="{{ user.username }}" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"/>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Email</label>
+            <input type="email" name="email" value="{{ user.email }}" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"/>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Department/Team</label>
+            <input type="text" name="department" value="{{ user.profile.department }}" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"/>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Skills</label>
+            <input type="text" name="skills" value="{{ user.profile.skills }}" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"/>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Phone Number</label>
+            <input type="text" name="phone_number" value="{{ user.profile.phone_number }}" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600"/>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-white mb-1">Bio</label>
+            <textarea name="bio" class="w-full p-3 rounded bg-gray-700 text-white border border-gray-600" rows="3">{{ user.profile.bio }}</textarea>
+          </div>
+
+       
+
+          <div class="flex justify-end">
+            <button type="submit" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

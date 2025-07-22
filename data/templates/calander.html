@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Management Tool - Calendar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <!-- Dashboard Layout -->
+  <div class="flex h-screen overflow-hidden">
+    <aside class="bg-gray-800 text-white w-64 min-h-full p-6 overflow-y-auto">
+      <div class="mb-8">
+        <img src="/logo.png" alt="Logo" class="w-12 h-12 mx-auto hover:scale-110 transition-transform duration-300">
+        <h1 class="text-center text-xl font-bold mt-2">Wefha</h1>
+      </div>
+      <nav>
+        <ul class="space-y-4">
+          <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+          <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
+          <li><a href="{% url 'data:calander' %}" class="block p-2 text-gray-300 hover:bg-purple-800 rounded">Calendar</a></li>
+          <li><a href="{% url 'data:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
+          <li><a href="{% url 'data:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+          <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
+        </ul>
+      </nav>
+      <div class="bg-purple-600 p-4 rounded-lg mt-12">
+        <h3 class="font-bold text-lg">Go PRO</h3>
+        <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+        <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
+    </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      <header class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-200">Calendar</h2>
+        <p class="text-gray-400">Manage your tasks and deadlines efficiently.</p>
+      </header>
+
+      <!-- Calendar Section -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <!-- Calendar View Toggle -->
+        <div class="flex justify-between items-center mb-6">
+          <div class="space-x-2">
+            <button id="month-view" class="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-purple-600">Month</button>
+            <button id="week-view" class="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-purple-600">Week</button>
+            <button id="day-view" class="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-purple-600">Day</button>
+          </div>
+          <button id="create-event" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full mt-4 hover:bg-blue-700 hover:scale-110 transition-transform duration-300">
+            + Create Event
+          </button>
+        </div>
+
+        <!-- FullCalendar Container -->
+        <div id="calendar" class="text-gray-300"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Event Creation Modal -->
+  <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-gray-800 p-6 rounded-lg w-96">
+      <h3 class="text-xl font-bold text-gray-200 mb-4">Create Event</h3>
+      <form id="event-form">
+        <div class="space-y-4">
+          <input type="text" id="event-title" placeholder="Event Title" class="w-full p-2 bg-gray-700 rounded text-gray-300">
+          <input type="datetime-local" id="event-start" class="w-full p-2 bg-gray-700 rounded text-gray-300">
+          <input type="datetime-local" id="event-end" class="w-full p-2 bg-gray-700 rounded text-gray-300">
+          <select id="event-color" class="w-full p-2 bg-gray-700 rounded text-gray-300">
+            <option value="#3b82f6">Blue</option>
+            <option value="#ef4444">Red</option>
+            <option value="#10b981">Green</option>
+            <option value="#f59e0b">Yellow</option>
+          </select>
+        </div>
+        <div class="mt-6 flex justify-end space-x-2">
+          <button type="button" id="cancel-event" class="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize FullCalendar
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: false,
+        editable: true, // Enable drag-and-drop
+        events: [
+          {
+            title: 'Project Deadline',
+            start: '2025-02-15',
+            end: '2025-02-16',
+            color: '#ef4444', // Red
+          },
+          {
+            title: 'Team Meeting',
+            start: '2025-02-20T10:00:00',
+            end: '2025-02-20T12:00:00',
+            color: '#3b82f6', // Blue
+          },
+        ],
+      });
+      calendar.render();
+
+      // Toggle Calendar Views
+      document.getElementById('month-view').addEventListener('click', () => calendar.changeView('dayGridMonth'));
+      document.getElementById('week-view').addEventListener('click', () => calendar.changeView('timeGridWeek'));
+      document.getElementById('day-view').addEventListener('click', () => calendar.changeView('timeGridDay'));
+
+      // Event Creation Modal
+      const eventModal = document.getElementById('event-modal');
+      const eventForm = document.getElementById('event-form');
+      document.getElementById('create-event').addEventListener('click', () => eventModal.classList.remove('hidden'));
+      document.getElementById('cancel-event').addEventListener('click', () => eventModal.classList.add('hidden'));
+
+      eventForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('event-title').value;
+        const start = document.getElementById('event-start').value;
+        const end = document.getElementById('event-end').value;
+        const color = document.getElementById('event-color').value;
+
+        calendar.addEvent({
+          title,
+          start,
+          end,
+          color,
+        });
+
+        eventModal.classList.add('hidden');
+        eventForm.reset();
+      });
+    });
+  </script>
+</body>
+</html>

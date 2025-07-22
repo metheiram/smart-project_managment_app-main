@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth background color transition */
+        .calendar-day {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+  
+</head>
+<body class="bg-gray-900 text-gray-900">
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="bg-gray-800 text-white w-64 min-h-screen p-6">
+            <!-- Logo -->
+            <div class="mb-8">
+                <img src="/logo.png" alt="Logo" class="w-12 h-12 mx-auto hover:scale-110 transition-transform duration-300">
+                <h1 class="text-center text-xl font-bold mt-2">Wefha</h1>
+            </div>
+            <!-- Navigation Links -->
+            <nav>
+                <ul class="space-y-4">
+                    <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+                    <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
+                    <li><a href="{% url 'data:calander' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
+
+                    <li><a href="{% url 'data:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
+                    <li><a href="{% url 'data:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+                    <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
+                </ul>
+            </nav>
+
+            <!-- Upgrade Section -->
+            <div class="bg-purple-600 p-4 rounded-lg mt-12">
+                <h3 class="font-bold text-lg">Go PRO</h3>
+                <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+                <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <!-- <h1 class="text-2xl font-bold">Welcome, Dominic!</h1> -->
+                    <h1 class="text-2xl text-white font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
+                        Welcome To,<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Project Management tool</span>
+                      </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full  hover:bg-blue-700  hover:scale-110 transition-transform duration-300">Create</button>
+                    <a href="{% url 'users:profile' %}"><i class="fa fa-user">
+                    <img src="/user-profile.jpg" alt="Profile" class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-300 text-white">
+                </i></a>
+                </div>
+              
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Calendar -->
+                <div class="col-span-1 text-white bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">August, 2020</h2>
+                    <div class="grid grid-cols-7 gap-2 text-center ">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        <!-- Days for the calendar -->
+                        <div class="calendar-day text-gray-700 text-white">1</div>
+                        <div class="calendar-day text-gray-700 text-white">2</div>
+                        <div class="calendar-day text-gray-700 text-white">3</div>
+                        <div class="calendar-day text-gray-700 text-white">4</div>
+                        <div class="calendar-day text-gray-700 text-white">5</div>
+                        <div class="calendar-day text-gray-700 text-white">6</div>
+                        <div class="calendar-day text-gray-700 text-white">7</div>
+                        <div class="calendar-day text-gray-700 text-white">8</div>
+                        <div class="calendar-day text-gray-700 text-white">9</div>
+                        <div class="calendar-day text-gray-700 text-white">10</div>
+                        <div class="calendar-day text-gray-700 text-white">11</div>
+                        <div class="calendar-day text-gray-700 text-white">12</div>
+                        <div class="calendar-day text-gray-700 text-white">13</div>
+                        <div class="calendar-day text-gray-700 text-white">14</div>
+                        <div class="calendar-day text-gray-700 text-white">15</div>
+                        <div class="calendar-day text-gray-700 text-white">16</div>
+                        <div class="calendar-day text-gray-700 text-white">17</div>
+                        <div class="calendar-day text-gray-700 text-white">18</div>
+                        <div class="calendar-day text-gray-700 text-white">19</div>
+                        <div class="calendar-day text-gray-700 text-white">20</div>
+                        <div class="calendar-day text-gray-700 text-white">21</div>
+                        <div class="calendar-day text-gray-700 text-white">22</div>
+                        <div class="calendar-day text-gray-700 text-white">23</div>
+                        <div class="calendar-day text-gray-700 text-white">24</div>
+                        <div class="calendar-day text-gray-700 text-white">25</div>
+                        <div class="calendar-day text-gray-700 text-white">26</div>
+                        <div class="calendar-day text-gray-700 text-white">27</div>
+                        <div class="calendar-day text-gray-700 text-white">28</div>
+                        <div class="calendar-day text-gray-700 text-white">29</div>
+                        <div class="calendar-day text-gray-700 text-white">30</div>
+                    </div>
+                </div>
+
+                <!-- Today Task -->
+                <div class="col-span-2 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Today Task</h2>
+                    <ul id="task-list" class="space-y-4 text-white">
+                        <!-- Tasks will be injected here -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Notifications & Projects -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 ">
+                <!-- Notifications -->
+                <div class="col-span-1 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Notification</h2>
+                    <p class="text-white">Emily just sent you a task.</p>
+                   <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full mt-4 hover:bg-blue-700 hover:scale-110 transition-transform duration-300">See Now</button>
+                </div>
+
+                <!-- Projects Section -->
+                <div class="col-span-2 bg-gray-800 shadow-md rounded-lg p-6">
+                    <h2 class="text-xl text-white font-bold mb-4">Projects</h2>
+                    <div class="space-y-4">
+                        <!-- Example project 1 -->
+                        <div class="flex justify-between items-center text-white">
+                            <div>
+                                <strong>Asia Project</strong>
+                                <p class="text-sm text-white text-gray-500">Deadline: 15th August 2020</p>
+                            </div>
+                            <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">View Details</button>
+                        </div>
+                        
+                        <!-- Example project 2 -->
+                        <div class="flex justify-between items-center text-white">
+                            <div>
+                                <strong>Research Task</strong>
+                                <p class="text-sm  text-white text-gray-500">Deadline: 20th August 2020</p>
+                            </div>
+                            <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">View Details</button>
+                        </div>
+
+                        <!-- Example project 3 -->
+                        <div class="flex justify-between items-center text-white">
+                            <div>
+                                <strong>Reports Finalization</strong>
+                                <p class="text-sm text-gray-500 text-white">Deadline: 25th August 2020</p>
+                            </div>
+                            <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:bg-blue-700 hover:scale-110 transition-transform duration-300">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>
