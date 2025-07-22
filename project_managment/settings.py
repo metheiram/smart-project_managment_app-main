@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'data',
     'users',
     'project',
+    
 ]
 
 MIDDLEWARE = [
@@ -152,3 +153,6 @@ LOGIN_REDIRECT_URL = '/'           # ✅ after login, go to dashboard
 LOGOUT_REDIRECT_URL = '/login/'   # ✅ after logout
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+

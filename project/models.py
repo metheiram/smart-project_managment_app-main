@@ -20,7 +20,7 @@ class Project(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     assigned_users = models.ManyToManyField(CustomUser)
-
+    
 class Comment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

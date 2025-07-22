@@ -1,6 +1,9 @@
 
 
 # Create your views here.
+from .utils import update_expired_projects
+from .utils import update_pending_projects
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Project, Comment
@@ -10,6 +13,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 @login_required
 def dashboard(request):
+    update_expired_projects() 
+    update_pending_projects()
     if request.user.role in ['admin', 'manager']:
         projects = Project.objects.all()
     else:
@@ -18,6 +23,8 @@ def dashboard(request):
 
 @login_required
 def project_list(request):
+    update_expired_projects()
+    update_pending_projects()
     status_filter = request.GET.get('status')
     if status_filter in ['pending', 'current', 'completed', 'failed']:
         projects = Project.objects.filter(status=status_filter)
@@ -28,6 +35,8 @@ def project_list(request):
 
 @login_required
 def project_detail(request, pk):
+    update_expired_projects() 
+    update_pending_projects()
     project = get_object_or_404(Project, pk=pk)
     comments = Comment.objects.filter(project=project)
     if request.method == 'POST':
@@ -45,6 +54,8 @@ def project_detail(request, pk):
 @login_required
 @is_project_manager_or_admin
 def project_create(request):
+    update_expired_projects()
+    update_pending_projects()
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -64,6 +75,8 @@ def project_create(request):
 @login_required
 @is_project_manager_or_admin
 def project_edit(request, pk):
+    update_expired_projects()
+    update_pending_projects()
     project = get_object_or_404(Project, pk=pk)
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
@@ -86,6 +99,8 @@ def register(request):
 
 @login_required
 def project_tab(request):
+    update_expired_projects() 
+    update_pending_projects()
     status_filter = request.GET.get('status')
     
     if status_filter in ['pending', 'current', 'completed', 'failed']:
@@ -94,3 +109,13 @@ def project_tab(request):
         projects = Project.objects.all()
 
     return render(request, 'project/project_tab.html', {'projects': projects})
+
+@login_required
+@is_project_manager_or_admin
+def project_delete(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    if request.method == 'POST':
+        project.delete()
+        messages.success(request, 'Project deleted successfully.')
+        return redirect('project:project_tab')
+    return render(request, 'project/project_confirm_delete.html', {'project': project})
