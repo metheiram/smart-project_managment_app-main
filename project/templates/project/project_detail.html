@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Detail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #10182F;
+            font-family: 'Segoe UI', sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1C1C2E, #1E2B4A);
+            border-radius: 15px;
+            padding: 30px;
+            margin: auto;
+            max-width: 800px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            color: #00AEEF;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .value {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .comment-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #2b2f4c;
+            border-radius: 12px;
+        }
+
+        .comment {
+            background-color: #20253F;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .comment small {
+            color: #aaa;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #353A58;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+        }
+
+        button {
+            background-color: #00AEEF;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #008FCC;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #00AEEF;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>{{ project.title }}</h2>
+
+    <div class="value"><span class="label">Description:</span> {{ project.description }}</div>
+    <div class="value"><span class="label">Status:</span> {{ project.status }}</div>
+    <div class="value"><span class="label">Start Date:</span> {{ project.start_date }}</div>
+    <div class="value"><span class="label">End Date:</span> {{ project.end_date }}</div>
+    <div class="value">
+        <span class="label">Assigned Users:</span>
+        {% for user in project.assigned_users.all %}
+            {{ user.username }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            <span style="color:#999;">No users assigned</span>
+        {% endfor %}
+    </div>
+
+    <div class="comment-box">
+        <h3>Comments</h3>
+        {% for comment in comments %}
+            <div class="comment">
+                <strong>{{ comment.user.username }}</strong><br>
+                {{ comment.text }}<br>
+                <small>{{ comment.timestamp }}</small>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.text }}
+            <button type="submit">Add Comment</button>
+        </form>
+    </div>
+
+    <a href="{% url 'project:project_list' %}" class="back-link">&larr; Back to Project List</a>
+</div>
+
+</body>
+</html>

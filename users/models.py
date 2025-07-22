@@ -1,7 +1,7 @@
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
-from django.utils import timezone
+
 
 
 class CustomUserManager(BaseUserManager):
@@ -42,19 +42,23 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
-    objects = CustomUserManager()
+    objects = CustomUserManager()  # This line must be aligned with the other fields
 
     def __str__(self):
         return self.username
 
 
+
+# Profile Model
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True)
-    department = models.CharField(max_length=100, blank=False)
-    skills = models.CharField(max_length=200, blank=False)
+    # notifications_enabled = models.BooleanField(default=True)
+    department = models.CharField(max_length=100,blank=False)
+    skills = models.CharField(max_length=200,blank=False)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-
     def __str__(self):
         return self.user.username
+
+

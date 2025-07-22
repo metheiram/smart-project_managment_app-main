@@ -1,6 +1,11 @@
+# Create your models here.
+from users.models import CustomUser
+
 from django.db import models
 from django.utils import timezone
-from users.models import CustomUser  # ✅ use from users
+
+
+
 
 class Project(models.Model):
     STATUS_CHOICES = (
@@ -16,15 +21,8 @@ class Project(models.Model):
     end_date = models.DateField()
     assigned_users = models.ManyToManyField(CustomUser)
 
-    def __str__(self):
-        return self.title
-
-
 class Comment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     text = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"{self.user.username}: {self.text[:30]}"

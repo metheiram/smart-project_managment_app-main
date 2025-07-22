@@ -7,7 +7,7 @@ from .models import Project, Comment
 from .forms import ProjectForm, CommentForm, CustomUserCreationForm
 from .decorators import is_project_manager_or_admin
 from django.contrib.auth import authenticate, login
-
+from django.contrib import messages
 @login_required
 def dashboard(request):
     if request.user.role in ['admin', 'manager']:
@@ -18,7 +18,13 @@ def dashboard(request):
 
 @login_required
 def project_list(request):
-    return render(request, 'project/project_tab.html', {'projects': Project.objects.all()})
+    status_filter = request.GET.get('status')
+    if status_filter in ['pending', 'current', 'completed', 'failed']:
+        projects = Project.objects.filter(status=status_filter)
+    else:
+        projects = Project.objects.all()
+    
+    return render(request, 'project/project_tab.html', {'projects': projects})
 
 @login_required
 def project_detail(request, pk):
@@ -42,11 +48,18 @@ def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('dashboard')
+            project = form.save(commit=False)
+            project.save()
+            form.save_m2m()  # ManyToMany fields like assigned_users
+            messages.success(request, 'Project created successfully!')
+            return redirect('project:project_tab')
+        else:
+            print(form.errors)  # 👈 Add this line temporarily to see errors in terminal
     else:
         form = ProjectForm()
+    
     return render(request, 'project/project_form.html', {'form': form})
+
 
 @login_required
 @is_project_manager_or_admin
@@ -68,3 +81,16 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'project/register.html', {'form': form})
+
+
+
+@login_required
+def project_tab(request):
+    status_filter = request.GET.get('status')
+    
+    if status_filter in ['pending', 'current', 'completed', 'failed']:
+        projects = Project.objects.filter(status=status_filter)
+    else:
+        projects = Project.objects.all()
+
+    return render(request, 'project/project_tab.html', {'projects': projects})

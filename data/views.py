@@ -20,7 +20,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
    
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'data/index.html')
 
 @login_required
 def dashboard(request):
@@ -33,8 +33,7 @@ def dashboard(request):
 def calander(request):
     return render(request, 'calander.html')
 
-def project_tab(request):
-    return render(request, 'project_tab.html') 
+
 
 def tasks_tab(request):
     return render(request, 'tasks_tab.html')

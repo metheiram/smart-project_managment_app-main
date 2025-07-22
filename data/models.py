@@ -2,23 +2,15 @@
 from django.db import models
 
 from django.conf import settings
-
+from project.models import Project
 
     
-class Project(models.Model):
-    # Fields for your Project model
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
 class Task(models.Model):
     # Fields for your Task model
     title = models.CharField(max_length=100)
     description = models.TextField()
-    project = models.ForeignKey('Project', on_delete=models.CASCADE)  # Assuming Task belongs to Project
+    project = models.ForeignKey('project.Project', on_delete=models.CASCADE) # Assuming Task belongs to Project
    
 
     due_date = models.DateTimeField()
@@ -28,14 +20,12 @@ class Task(models.Model):
         return self.title
 class Feedback(models.Model):
     # Fields for your Feedback model
-   
-    
-    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    project = models.ForeignKey('project.Project', on_delete=models.CASCADE)
     feedback_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Feedback by {self.user} on {self.project}"
+        return f"Feedback on {self.project}"
 class Notification(models.Model):
     
     message = models.CharField(max_length=255)
