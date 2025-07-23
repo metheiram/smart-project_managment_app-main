@@ -1,0 +1,83 @@
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Task</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Create New Task</h1>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Title -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Title</label>
+                {{ form.title|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Description</label>
+                {{ form.description|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Assigned to -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Assigned To</label>
+                {{ form.assigned_to|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Start Date -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Start Date</label>
+                {{ form.start_date|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Due Date -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Due Date</label>
+                {{ form.due_date|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Status</label>
+                {{ form.status|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Priority -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Priority</label>
+                {{ form.priority|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Progress -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Progress (%)</label>
+                {{ form.progress|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Commands -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Commands</label>
+                {{ form.commands|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit"
+                    class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300">
+                    Save Task
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

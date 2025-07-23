@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'data',
     'users',
     'project',
-    
+    'tasks',
+    'widget_tweaks',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

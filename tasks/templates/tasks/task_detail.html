@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex justify-center items-center p-6">
+
+<div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-2xl">
+    <h1 class="text-3xl font-bold text-center mb-4">{{ task.title }}</h1>
+    
+    <p><span class="font-semibold">Description:</span> {{ task.description }}</p>
+    <p><span class="font-semibold">Assigned To:</span> {{ task.assigned_to }}</p>
+    <p><span class="font-semibold">Start Date:</span> {{ task.start_date }}</p>
+    <p><span class="font-semibold">Due Date:</span> {{ task.due_date }}</p>
+    <p><span class="font-semibold">Status:</span> {{ task.status }}</p>
+    <p><span class="font-semibold">Priority:</span> {{ task.priority }}</p>
+    <p><span class="font-semibold">Progress:</span> {{ task.progress }}%</p>
+    <p><span class="font-semibold">Commands:</span> {{ task.commands }}</p>
+ {% if user.role == 'admin' or user.role == 'manager' %}
+    <div class="mt-6 flex justify-between">
+       
+        <a href="{% url 'tasks:task_edit' task.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Edit</a>
+        <a href="{% url 'tasks:task_delete' task.pk %}" onclick="return confirm('Are you sure?')" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Delete</a>
+
+        {% if task.status != 'completed' %}
+        <form method="post" action="{% url 'tasks:mark_complete' task.id %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                Mark as Complete
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+</body>
+</html>
