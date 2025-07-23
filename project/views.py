@@ -1,9 +1,10 @@
 
 
 # Create your views here.
+from .models import Project
 from .utils import update_expired_projects
 from .utils import update_pending_projects
-
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Project, Comment
@@ -101,12 +102,21 @@ def register(request):
 def project_tab(request):
     update_expired_projects() 
     update_pending_projects()
+
     status_filter = request.GET.get('status')
-    
+    search_query = request.GET.get("search", "").strip()
+
+    # ✅ Always initialize projects first
+    projects = Project.objects.all()
+
     if status_filter in ['pending', 'current', 'completed', 'failed']:
-        projects = Project.objects.filter(status=status_filter)
-    else:
-        projects = Project.objects.all()
+        projects = projects.filter(status=status_filter)
+
+    if search_query:
+        projects = projects.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
 
     return render(request, 'project/project_tab.html', {'projects': projects})
 
