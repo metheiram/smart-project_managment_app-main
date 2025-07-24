@@ -13,3 +13,7 @@ urlpatterns = [
     path('settings/', views.settings_view, name='settings'),
    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+

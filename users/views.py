@@ -4,7 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
+from .forms import UserUpdateForm, ProfileForm, PreferenceForm
 
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash  # For password change
 from .forms import (
     CustomUserCreationForm,
     CustomAuthenticationForm,
@@ -92,37 +95,42 @@ def logout_view(request):
         return redirect('users:login')
 
 
+
+
 @login_required
 def settings_view(request):
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
-            user_form = UserUpdateForm(request.POST, instance=request.user)
-            profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        password_form = PasswordChangeForm(request.user, request.POST)
+        preference_form = PreferenceForm(request.POST, instance=request.user)
 
+        if 'update_profile' in request.POST:
             if user_form.is_valid() and profile_form.is_valid():
                 user_form.save()
                 profile_form.save()
-                messages.success(request, 'Profile updated successfully!')
+                messages.success(request, "✅ Profile updated successfully.")
                 return redirect('users:settings')
 
         elif 'change_password' in request.POST:
-            password_form = PasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
-                password_form.save()
-                messages.success(request, 'Password changed successfully!')
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "🔒 Password changed successfully.")
                 return redirect('users:settings')
+            else:
+                messages.error(request, "❌ Please correct the error below.")
 
         elif 'save_preferences' in request.POST:
-            preference_form = PreferenceForm(request.POST, instance=request.user)
             if preference_form.is_valid():
                 preference_form.save()
-                messages.success(request, 'Preferences updated successfully!')
+                messages.success(request, "⚙️ Preferences saved successfully.")
                 return redirect('users:settings')
 
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
-        password_form = PasswordChangeForm(user=request.user)
+        password_form = PasswordChangeForm(request.user)
         preference_form = PreferenceForm(instance=request.user)
 
     return render(request, 'users/settings.html', {
@@ -131,6 +139,8 @@ def settings_view(request):
         'password_form': password_form,
         'preference_form': preference_form,
     })
+
+
 
 @login_required
 def profile_view(request):

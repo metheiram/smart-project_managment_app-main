@@ -31,7 +31,7 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(unique=True)
-
+    notifications_enabled = models.BooleanField(default=True)
     ROLE_CHOICES = (
         ('admin', 'Admin'),
         ('manager', 'Project Manager'),

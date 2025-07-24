@@ -2,6 +2,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Profile
+from django.contrib.auth.forms import PasswordChangeForm
+
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -34,3 +36,5 @@ class PreferenceForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['preference_field_1', 'preference_field_2']
+
+
