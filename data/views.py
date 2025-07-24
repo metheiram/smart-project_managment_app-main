@@ -9,7 +9,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Project, Task, Feedback, Notification, Role 
+from .models import Project, Task, Feedback,  Role 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -38,8 +38,7 @@ def calander(request):
 def tasks_tab(request):
     return render(request, 'tasks_tab.html')
 
-def notification(request):
-    return render(request, 'notification.html')
+
 
 
 def settings(request):

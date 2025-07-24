@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'tasks',
     'widget_tweaks',
     'django.contrib.humanize',
+    'notification',  # Ensure this is included
 ]
 
 MIDDLEWARE = [
