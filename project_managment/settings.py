@@ -158,5 +158,7 @@ LOGOUT_REDIRECT_URL = '/login/'   # ✅ after logout
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'users.CustomUser'
 
+# ✅ Add this placeholder — update in your .env or directly in settings
+OPENAI_API_KEY = 'your-openai-key-here'  # Replace this after testing
 
 

@@ -12,6 +12,16 @@ from .forms import ProjectForm, CommentForm, CustomUserCreationForm
 from .decorators import is_project_manager_or_admin
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+
+from tasks.models import Task
+from .ai_utils import generate_tasks_from_description
+from datetime import datetime, timedelta
+from project.ai_utils import generate_tasks_from_description, get_best_user_for_task
+from notification.models import Notification 
+
+
+
+
 @login_required
 def dashboard(request):
     update_expired_projects() 
@@ -129,3 +139,51 @@ def project_delete(request, pk):
         messages.success(request, 'Project deleted successfully.')
         return redirect('project:project_tab')
     return render(request, 'project/project_confirm_delete.html', {'project': project})
+
+@login_required
+@is_project_manager_or_admin
+def ai_generate_tasks(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+
+    if request.method == 'POST':
+        description = project.description
+        generated_tasks = generate_tasks_from_description(description)
+
+        for task_text in generated_tasks:
+            if not task_text.strip():
+                continue
+
+            # Extract title and optional description
+            if ' - ' in task_text:
+                title, desc = task_text.split(" - ", 1)
+            else:
+                title, desc = task_text, ""
+
+            # ✅ Get best user based on skills + workload
+            assignee = get_best_user_for_task(title.strip())
+
+            # ✅ Create task
+            task = Task.objects.create(
+                project=project,
+                title=title.strip(),
+                description=desc.strip(),
+                start_date=datetime.now().date(),
+                due_date=datetime.now() + timedelta(days=7),
+                status="not_started",
+                priority="medium",
+                assignee=assignee  # ✅ Save assigned user
+            )
+
+            # ✅ Send notification if user is assigned
+            if assignee:
+                Notification.objects.create(
+                    user=assignee,
+                    message=f"You have been auto-assigned a new task: {task.title}",
+                    link=reverse('tasks:task_detail', args=[task.pk]),
+                    notification_type='task_assigned'
+                )
+
+        messages.success(request, "AI-generated tasks created and assigned!")
+        return redirect('project_detail', pk=pk)
+
+    return render(request, 'project/ai_generate_confirm.html', {'project': project})

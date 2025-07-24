@@ -14,4 +14,5 @@ urlpatterns = [
     path('register/', views.register, name='register'),
      path('project-tab/', views.project_tab, name='project_tab'),
      path('projects/create/', views.project_create, name='project_create'),
+     path('ai-generate/<int:pk>/', views.ai_generate_tasks, name='ai_generate_tasks'),
 ]

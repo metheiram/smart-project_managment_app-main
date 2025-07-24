@@ -131,6 +131,12 @@
 
     <a href="{% url 'project:project_list' %}" class="back-link">&larr; Back to Project List</a>
 </div>
+{% if user.role == 'admin' or user.role == 'manager' %}
+    <form method="post" action="{% url 'project:ai_generate_tasks' project.pk %}">
+        {% csrf_token %}
+        <button type="submit">⚙️ Generate Tasks with AI</button>
+    </form>
+{% endif %}
 
 </body>
 </html>

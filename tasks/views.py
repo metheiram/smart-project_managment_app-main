@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 from .decorators import is_project_manager_or_admin
-
+from project.ai_utils import get_best_user_for_task
 @login_required
 def task_list(request):
     query = request.GET.get('q')
@@ -43,13 +43,21 @@ def task_create(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Task created successfully!")
+            task = form.save(commit=False)
+
+            # ✅ Auto-assign logic
+            if not task.assignee:
+                best_user = get_best_user_for_task(task.title)
+                if best_user:
+                    task.assignee = best_user
+
+            task.save()
+            form.save_m2m()
+            messages.success(request, f"Task created! Assigned to {task.assignee.username if task.assignee else 'nobody'}")
             return redirect('tasks:tasks_tab')
     else:
         form = TaskForm()
     return render(request, 'tasks/task_create.html', {'form': form})
-
 
 @login_required
 @is_project_manager_or_admin
