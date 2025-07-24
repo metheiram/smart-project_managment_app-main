@@ -30,8 +30,7 @@ def dashboard(request):
         projects = Project.objects.filter(assigned_users=request.user)
     return render(request, 'data/dashboard.html', {'projects': projects})
     
-def calander(request):
-    return render(request, 'calander.html')
+
 
 
 

@@ -4,13 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Management Tool - Calendar</title>
+  <title>Project Management Tool - Calender</title>
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalender@6.1.9/index.global.min.js"></script>
 </head>
 <body class="bg-gray-900 text-white">
-
-  <!-- Dashboard Layout -->
   <div class="flex h-screen overflow-hidden">
     <aside class="bg-gray-800 text-white w-64 min-h-full p-6 overflow-y-auto">
       <div class="mb-8">
@@ -21,7 +20,7 @@
         <ul class="space-y-4">
           <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
           <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
-          <li><a href="{% url 'data:calander' %}" class="block p-2 text-gray-300 hover:bg-purple-800 rounded">Calendar</a></li>
+          <li><a href="{% url 'calender:calender' %}" class="block p-2 text-gray-300 hover:bg-purple-800 rounded">Calendar</a></li>
           <li><a href="{% url 'tasks:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
           <li><a href="{% url 'notification:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
           <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
@@ -31,19 +30,14 @@
         <h3 class="font-bold text-lg">Go PRO</h3>
         <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
         <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
-    </div>
+      </div>
     </aside>
-
-    <!-- Main Content -->
     <main class="flex-1 p-8 overflow-y-auto">
       <header class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-200">Calendar</h2>
+        <h2 class="text-3xl font-bold text-gray-200">Calender</h2>
         <p class="text-gray-400">Manage your tasks and deadlines efficiently.</p>
       </header>
-
-      <!-- Calendar Section -->
       <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <!-- Calendar View Toggle -->
         <div class="flex justify-between items-center mb-6">
           <div class="space-x-2">
             <button id="month-view" class="bg-gray-700 text-gray-300 px-4 py-2 rounded hover:bg-purple-600">Month</button>
@@ -54,14 +48,10 @@
             + Create Event
           </button>
         </div>
-
-        <!-- FullCalendar Container -->
-        <div id="calendar" class="text-gray-300"></div>
+        <div id="calender" class="text-gray-300"></div>
       </div>
     </main>
   </div>
-
-  <!-- Event Creation Modal -->
   <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
     <div class="bg-gray-800 p-6 rounded-lg w-96">
       <h3 class="text-xl font-bold text-gray-200 mb-4">Create Event</h3>
@@ -84,38 +74,21 @@
       </form>
     </div>
   </div>
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize FullCalendar
-      const calendarEl = document.getElementById('calendar');
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      const calenderEl = document.getElementById('calender');
+      const calender = new FullCalender.Calender(calenderEl, {
         initialView: 'dayGridMonth',
         headerToolbar: false,
-        editable: true, // Enable drag-and-drop
-        events: [
-          {
-            title: 'Project Deadline',
-            start: '2025-02-15',
-            end: '2025-02-16',
-            color: '#ef4444', // Red
-          },
-          {
-            title: 'Team Meeting',
-            start: '2025-02-20T10:00:00',
-            end: '2025-02-20T12:00:00',
-            color: '#3b82f6', // Blue
-          },
-        ],
+        editable: true,
+        events: '/calender/events/json/',
       });
-      calendar.render();
+      calender.render();
 
-      // Toggle Calendar Views
-      document.getElementById('month-view').addEventListener('click', () => calendar.changeView('dayGridMonth'));
-      document.getElementById('week-view').addEventListener('click', () => calendar.changeView('timeGridWeek'));
-      document.getElementById('day-view').addEventListener('click', () => calendar.changeView('timeGridDay'));
+      document.getElementById('month-view').addEventListener('click', () => calender.changeView('dayGridMonth'));
+      document.getElementById('week-view').addEventListener('click', () => calender.changeView('timeGridWeek'));
+      document.getElementById('day-view').addEventListener('click', () => calender.changeView('timeGridDay'));
 
-      // Event Creation Modal
       const eventModal = document.getElementById('event-modal');
       const eventForm = document.getElementById('event-form');
       document.getElementById('create-event').addEventListener('click', () => eventModal.classList.remove('hidden'));
@@ -128,15 +101,20 @@
         const end = document.getElementById('event-end').value;
         const color = document.getElementById('event-color').value;
 
-        calendar.addEvent({
-          title,
-          start,
-          end,
-          color,
+       fetch('/calender/create/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ title, start, end, color })
+        })
+        .then(response => response.json())
+        .then(data => {
+          calender.addEvent(data);
+          eventModal.classList.add('hidden');
+          eventForm.reset();
         });
-
-        eventModal.classList.add('hidden');
-        eventForm.reset();
       });
     });
   </script>
