@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const currentDate = new Date();
     const currentDay = currentDate.getDate();
-    const calendarDays = document.querySelectorAll('.calendar-day');
+    const calenderDays = document.querySelectorAll('.calender-day');
     const taskList = document.getElementById('task-list');
 
     // Task data for different dates (for example purposes)
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Set the current day as highlighted
-    calendarDays.forEach(day => {
+    calenderDays.forEach(day => {
         if (parseInt(day.textContent) === currentDay) {
             day.classList.add('bg-purple-600', 'text-white');
             day.classList.remove('text-gray-700');
@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add event listeners for each date
-    calendarDays.forEach(day => {
+    calenderDays.forEach(day => {
         day.addEventListener('click', () => {
             // Remove highlight from previous selected day
-            calendarDays.forEach(d => d.classList.remove('bg-purple-600', 'text-white'));
+            calenderDays.forEach(d => d.classList.remove('bg-purple-600', 'text-white'));
             day.classList.add('bg-purple-600', 'text-white');
             day.classList.remove('text-gray-700');
 
