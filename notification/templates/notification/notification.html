@@ -42,59 +42,66 @@
 </head>
 <body class="bg-gray-900 text-gray-900">
     <div class="flex">
-        <!-- Existing Sidebar -->
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 min-h-screen p-6">
+            <div class="mb-8">
+                <img src="/logo.png" alt="Logo" class="w-12 h-12 mx-auto hover:scale-110 transition-transform duration-300">
+                <h1 class="text-center text-xl font-bold mt-2">Wefha</h1>
+            </div>
+            <nav>
+                <ul class="space-y-4">
+                    <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+                    <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
+                    <li><a href="{% url 'data:calander' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
+                    <li><a href="{% url 'tasks:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
+                    <li><a href="{% url 'notification:notification_list' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
+                    <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
+                </ul>
+            </nav>
+            <div class="bg-purple-600 p-4 rounded-lg mt-12">
+                <h3 class="font-bold text-lg">Go PRO</h3>
+                <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
+                <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
+            </div>
+        </aside>
 
-        <div class="flex">
-            <aside class="bg-gray-800 text-white w-64 min-h-screen p-6">
-                <!-- Logo -->
-                <div class="mb-8">
-                    <img src="/logo.png" alt="Logo" class="w-12 h-12 mx-auto hover:scale-110 transition-transform duration-300">
-                    <h1 class="text-center text-xl font-bold mt-2">Wefha</h1>
-                </div>
-                <!-- Navigation Links -->
-                <nav>
-                    <ul class="space-y-4">
-                        <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
-                        <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
-                        <li><a href="{% url 'data:calander' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
-                        <li><a href="{% url 'tasks:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
-                        <li><a href="{% url 'notification:notification_list' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
-                        <li><a href="{% url 'users:settings' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Settings</span></a></li>
-                    </ul>
-                </nav>
-    
-                <!-- Upgrade Section -->
-                <div class="bg-purple-600 p-4 rounded-lg mt-12">
-                    <h3 class="font-bold text-lg">Go PRO</h3>
-                    <p class="text-sm mt-2">Upgrade to enjoy advanced features for your team.</p>
-                    <button class="bg-white text-purple-700 px-4 py-2 mt-4 rounded-md font-semibold">Upgrade Now</button>
-                </div>
-            </aside>
-    
-
-        <!-- Notifications Page Content -->
+        <!-- Main Content -->
         <div class="flex-1 p-6">
-            <!-- Header -->
             <header class="flex justify-between items-center mb-6">
                 <div>
                     <h1 class="text-2xl text-white font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
-                        Notifications<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">(3 new)</span>
+                        Notifications<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text ml-2">({{ notifications|length }} new)</span>
                     </h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-110 transition-transform duration-300">
+                    <a href="{% url 'notification:mark_all_as_read' %}" class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-110 transition-transform duration-300">
                         Mark All as Read
-                    </button>
+                    </a>
                 </div>
             </header>
 
-            <!-- Notifications Container -->
+            <!-- Notification Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <!-- Notification Cards -->
-                <div class="notification-card bg-gray-800 p-6 rounded-xl shadow-xl border-l-4 border-purple-500 hover:border-cyan-400 transition-all duration-300">
+                {% for notification in notifications %}
+                <div class="notification-card bg-gray-800 p-6 rounded-xl shadow-xl border-l-4
+                    {% if notification.is_read %}
+                        border-gray-700 opacity-60
+                    {% else %}
+                        {% if notification.notification_type == 'task_assigned' %}
+                            border-purple-500
+                        {% elif notification.notification_type == 'deadline_alert' %}
+                            border-red-500
+                        {% elif notification.notification_type == 'project_created' %}
+                            border-green-500
+                        {% endif %}
+                    {% endif %}
+                    hover:border-cyan-400 transition-all duration-300"
+                >
                     <div class="flex items-start space-x-4">
                         <div class="relative">
+                            {% if not notification.is_read %}
                             <div class="w-3 h-3 bg-purple-500 rounded-full unread-dot absolute -right-1 -top-1"></div>
+                            {% endif %}
                             <div class="bg-gradient-to-r from-purple-600 to-cyan-500 p-3 rounded-lg">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -102,105 +109,29 @@
                             </div>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-white font-semibold">New Comment Received</h3>
-                            <p class="text-gray-400 mt-2">John commented on your project: "This looks amazing! Let's schedule a review meeting."</p>
+                            <h3 class="text-white font-semibold">{{ notification.get_notification_type_display }}</h3>
+                            <p class="text-gray-400 mt-2">{{ notification.message }}</p>
                             <div class="flex items-center justify-between mt-4">
-                                <span class="text-sm text-cyan-400">2 hours ago</span>
-                                <button class="text-purple-400 hover:text-cyan-400 transition-colors">
-                                    View Comment
-                                </button>
+                                <span class="text-sm text-cyan-400">{{ notification.created_at|timesince }} ago</span>
+                                {% if notification.link %}
+                                <a href="{{ notification.link }}" class="text-purple-400 hover:text-cyan-400 transition-colors">
+                                    View
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- More Notification Cards with Different Styles -->
-                <div class="notification-card bg-gray-800 p-6 rounded-xl shadow-xl border-l-4 border-red-500 hover:border-cyan-400 transition-all duration-300" style="animation-delay: 0.2s">
-                    <div class="flex items-start space-x-4">
-                        <div class="relative">
-                            <div class="w-3 h-3 bg-red-500 rounded-full unread-dot absolute -right-1 -top-1"></div>
-                            <div class="bg-gradient-to-r from-red-600 to-orange-500 p-3 rounded-lg">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-white font-semibold">Deadline Approaching</h3>
-                            <p class="text-gray-400 mt-2">Project "Mobile App Design" deadline is in 3 days. Please complete your tasks.</p>
-                            <div class="flex items-center justify-between mt-4">
-                                <span class="text-sm text-cyan-400">5 hours ago</span>
-                                <button class="text-red-400 hover:text-cyan-400 transition-colors">
-                                    View Project
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="notification-card bg-gray-800 p-6 rounded-xl shadow-xl border-l-4 border-green-500 hover:border-cyan-400 transition-all duration-300" style="animation-delay: 0.4s">
-                    <div class="flex items-start space-x-4">
-                        <div class="relative">
-                            <div class="w-3 h-3 bg-green-500 rounded-full unread-dot absolute -right-1 -top-1"></div>
-                            <div class="bg-gradient-to-r from-green-600 to-cyan-500 p-3 rounded-lg">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-white font-semibold">Task Completed</h3>
-                            <p class="text-gray-400 mt-2">Sarah marked "User Dashboard Design" as completed. Please review.</p>
-                            <div class="flex items-center justify-between mt-4">
-                                <span class="text-sm text-cyan-400">1 day ago</span>
-                                <button class="text-green-400 hover:text-cyan-400 transition-colors">
-                                    Review Task
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Archived Notification Example -->
-                <div class="notification-card bg-gray-700 p-6 rounded-xl shadow-xl transition-all duration-300" style="animation-delay: 0.6s">
-                    <div class="flex items-start space-x-4 opacity-75">
-                        <div class="bg-gray-600 p-3 rounded-lg">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-gray-400 font-semibold">System Update</h3>
-                            <p class="text-gray-500 mt-2">New feature added: Team collaboration channels</p>
-                            <div class="flex items-center justify-between mt-4">
-                                <span class="text-sm text-gray-500">3 days ago</span>
-                                <span class="text-gray-500 text-sm">Read</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
     <script src="{% static 'js/dashboard.js' %}"></script>
     <script>
-        // Add intersection observer for scroll animations
         const cards = document.querySelectorAll('.notification-card');
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
-        });
-
-        // Mark as read functionality
-        document.querySelectorAll('.notification-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const dot = card.querySelector('.unread-dot');
-                if(dot) {
-                    dot.remove();
-                    card.classList.remove('border-purple-500', 'border-red-500', 'border-green-500');
-                    card.classList.add('border-gray-600');
-                }
-            });
         });
     </script>
 </body>

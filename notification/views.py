@@ -18,3 +18,8 @@ def mark_as_read(request, pk):
     return redirect(notification.link or 'notification_list')
 def notification(request):
     return render(request, 'notification/notification.html')
+
+@login_required
+def mark_all_as_read(request):
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return redirect('notification:notification')
