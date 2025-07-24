@@ -13,4 +13,6 @@ urlpatterns = [
     path('', include('project.urls')),
     path('login/', auth_views.LoginView.as_view(template_name='project/login.html'), name='login'),
      path('tasks/', include('tasks.urls', namespace='tasks')), 
+     path('notifications/', include('notification.urls')),
+
 ]
