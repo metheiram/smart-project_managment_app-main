@@ -1,12 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from project.models import Project  # Reusing the same project model
 
-class Project(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
 
 class Task(models.Model):
     STATUS_CHOICES = [
@@ -23,20 +19,32 @@ class Task(models.Model):
         ('critical', 'Critical'),
     ]
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="tasks_from_tasks_app",
+        default=1  # ✅ Default Project ID (make sure ID=1 exists)
+    )
+
     title = models.CharField(max_length=255)
     description = models.TextField()
-    assigned_to = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    
+
+    assigned_to = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name='task_assigned_to'
+    )
+
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='assigned_tasks'
+        related_name='task_assignee'
     )
-    start_date = models.DateField()
-    due_date = models.DateTimeField()
+
+    start_date = models.DateField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='low')
     progress = models.PositiveIntegerField(default=0)
@@ -44,18 +52,21 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_overdue(self):
-        return self.due_date < timezone.now() and self.status != 'completed'
+        return self.due_date and self.due_date < timezone.now() and self.status != 'completed'
 
     def auto_update_status(self):
-        if self.progress == 100:
-            self.status = 'completed'
-        elif self.is_overdue():
-            self.status = 'overdue'
-        elif self.progress > 0:
-            self.status = 'in_progress'
-        else:
-            self.status = 'not_started'
-        self.save()
+        if self.status not in ['completed', 'overdue']:
+            if self.progress == 100:
+                self.status = 'completed'
+            elif self.is_overdue():
+                self.status = 'overdue'
+            elif self.progress > 0:
+                self.status = 'in_progress'
+            else:
+                self.status = 'not_started'
+            self.save()
 
     def __str__(self):
         return self.title
+
+

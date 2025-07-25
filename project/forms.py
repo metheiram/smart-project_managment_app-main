@@ -1,7 +1,8 @@
 from django import forms
-from .models import Project, Comment
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from users.models import CustomUser
+from .models import Project
+
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -12,10 +13,7 @@ class ProjectForm(forms.ModelForm):
         }
 
 
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['text']
+
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:

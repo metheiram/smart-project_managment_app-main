@@ -46,7 +46,7 @@ def login_view(request):
                 messages.error(request, "Invalid password.")
             else:
                 messages.error(request, "Account does not exist. Please sign up.")
-                return redirect('signup')
+                return redirect('users:signup')
 
     return render(request, 'users/login.html', {'form': CustomAuthenticationForm()})
 

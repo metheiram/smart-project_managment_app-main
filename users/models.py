@@ -32,6 +32,7 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(unique=True)
     notifications_enabled = models.BooleanField(default=True)
+    expertise = models.CharField(max_length=255, blank=True, null=True)  
     ROLE_CHOICES = (
         ('admin', 'Admin'),
         ('manager', 'Project Manager'),

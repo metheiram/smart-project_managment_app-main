@@ -162,3 +162,18 @@ AUTH_USER_MODEL = 'users.CustomUser'
 OPENAI_API_KEY = 'your-openai-key-here'  # Replace this after testing
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
