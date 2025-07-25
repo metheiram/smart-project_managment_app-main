@@ -6,7 +6,7 @@ from groq import Groq
 load_dotenv()
 
 
-def generate_subtasks(project_description, team_size,project_title):
+def generate_subtasks(project_description, team_size, project_title, project_due_date):
     client = Groq(api_key=os.getenv("groq_API"))
 
     chat_completion = client.chat.completions.create(
@@ -16,17 +16,20 @@ def generate_subtasks(project_description, team_size,project_title):
                 "content": f"""
 You are a smart project task generator.
 
-Based on the following project description: "{project_description}", generate exactly {team_size} subtasks.
+Based on this project description: "{project_description}", generate exactly {team_size} subtasks.
 
-For each subtask, provide a dictionary with:
+For each subtask, provide:
 - title
 - description
 - estimated_days
+- due_date (required: must be a valid date string in format YYYY-MM-DD, evenly spaced before project deadline: {project_due_date})
+
 - priority: ["low", "medium", "high", "critical"]
 - status: ["not_started", "in_progress", "completed"]
 - progress: 0–100 (default to 0 unless specified)
-Also, include the project_title field and set its value to "{project_title}".
-Return only the list of dictionaries. No explanation.
+- project_title: "{project_title}"
+
+Return only a list of dictionaries.
 """
             }
         ],
@@ -42,14 +45,15 @@ Return only the list of dictionaries. No explanation.
         for subtask in subtasks:
             subtask['progress'] = subtask.get('progress', 0)
             subtask['status'] = subtask.get('status', 'not_started')
+            subtask['due_date'] = subtask.get('due_date', str(project_due_date))  # Default to project due date
         return subtasks
     except Exception as e:
         print("⚠️ Could not parse response as list of dictionaries:\n", content)
         print("Error:", e)
         return []
 
-def assign_tasks(team_expertise, project_description, team_size,project_title):
-    subtasks = generate_subtasks(project_description, team_size,project_title)
+def assign_tasks(team_expertise, project_description, team_size,project_title,project_due_date):
+    subtasks = generate_subtasks(project_description, team_size,project_title,project_due_date)
     if not subtasks:
         print("❌ No subtasks generated. Exiting...")
         return None

@@ -7,20 +7,27 @@
     <title>Task Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/project_tab.css' %}">
+    <style>
+        /* Ensure body doesn't scroll, only main content does */
+        body {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-white font-sans">
-<div class="flex h-screen">
+
+<div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="bg-gray-800 text-white w-1/5 p-6 flex flex-col justify-between">
+    <aside class="bg-gray-800 text-white w-1/5 p-6 flex flex-col justify-between h-full fixed left-0 top-0 bottom-0">
         <div>
             <h1 class="text-2xl font-bold mb-10 bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Dashboard</h1>
             <nav>
                 <ul class="space-y-6">
                     <li><a href="{% url 'data:dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a></li>
-                    <li><a href="{% url 'project:project_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Projects</a></li>
+                    <li><a href="{% url 'project:project_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md font-semibold">Projects</a></li>
                     <li><a href="{% url 'calender:calender' %}" class="block hover:bg-purple-800 p-2 rounded-md">Calendar</a></li>
-                    <li><a href="{% url 'tasks:tasks_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md font-semibold">Tasks</a></li>
-                    <li><a href="{% url 'notification:notification' %}" class="block hover:bg-purple-800 p-2 rounded-md">Notifications</a></li>
+                    <li><a href="{% url 'tasks:tasks_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Tasks</a></li>
+                    <li><a href="{% url 'notification:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
                     <li><a href="{% url 'users:settings' %}" class="block hover:bg-purple-800 p-2 rounded-md">Settings</a></li>
                 </ul>
             </nav>
@@ -33,21 +40,21 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="w-4/5 p-8">
+    <div class="ml-[20%] w-[80%] overflow-y-auto h-screen p-8">
         {% if messages %}
-            <div id="success-message" class="mb-4">
-                {% for message in messages %}
-                    <div class="bg-green-600 text-white px-4 py-3 rounded-md shadow-md">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-            <script>
-                setTimeout(() => {
-                    const msg = document.getElementById('success-message');
-                    if (msg) msg.style.display = 'none';
-                }, 3000);
-            </script>
+        <div id="success-message" class="mb-4">
+            {% for message in messages %}
+                <div class="bg-green-600 text-white px-4 py-3 rounded-md shadow-md">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            setTimeout(() => {
+                const msg = document.getElementById('success-message');
+                if (msg) msg.style.display = 'none';
+            }, 3000);
+        </script>
         {% endif %}
 
         <!-- Header -->
@@ -103,11 +110,12 @@
                 {% for task in tasks %}
                     <tr data-url="{% url 'tasks:task_detail' task.pk %}" class="clickable-row hover:bg-gray-700 cursor-pointer">
                         <td class="border border-gray-700 px-4 py-2">{{ task.title }}</td>
-                        <td class="border border-gray-700 px-4 py-2">{{ task.due_date|date:"d M Y" }}</td>
+                        <td class="border border-gray-700 px-4 py-2">{{ task.due_date }}</td>
                         <td class="border border-gray-700 px-4 py-2">
                             <span class="bg-purple-500 text-white px-2 py-1 rounded-full text-sm">{{ task.status }}</span>
                         </td>
-                        <td class="border border-gray-700 px-4 py-2">{{ task.project.name|default:"—" }}</td>
+                        <td class="border border-gray-700 px-4 py-2">{{ task.project.title }}</td>
+
                         <td class="border border-gray-700 px-4 py-2">
                             {% if task.assignee and task.assignee.profile and task.assignee.profile.image %}
                                 <img src="{{ task.assignee.profile.image.url }}" class="w-8 h-8 rounded-full" alt="assignee">
