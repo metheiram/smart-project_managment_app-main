@@ -12,6 +12,6 @@ urlpatterns = [
     path('project/', include('project.urls')),  # Project module now under /project/
     path('login/', auth_views.LoginView.as_view(template_name='project/login.html'), name='login'),
     path('tasks/', include('tasks.urls', namespace='tasks')),
-    path('notifications/', include('notification.urls')),
+    path('notifications/', include('notification.urls', namespace='notification')),
     path('calender/', include('calender.urls')),
 ]

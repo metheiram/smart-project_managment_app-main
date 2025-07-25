@@ -44,15 +44,17 @@ class Task(models.Model):
     )
 
     start_date = models.DateField(null=True, blank=True)
-    due_date = models.DateTimeField(null=True, blank=True)
+    project_title = models.CharField(max_length=255,null=True, blank=True)  # 👈 Add this field
+    due_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='low')
     progress = models.PositiveIntegerField(default=0)
     commands = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    assigned_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='assigned_tasks', blank=True)
     def is_overdue(self):
-        return self.due_date and self.due_date < timezone.now() and self.status != 'completed'
+        return self.due_date and self.due_date < timezone.now().date() and self.status != 'completed'
+
 
     def auto_update_status(self):
         if self.status not in ['completed', 'overdue']:
