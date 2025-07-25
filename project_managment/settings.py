@@ -158,5 +158,22 @@ LOGOUT_REDIRECT_URL = '/login/'   # ✅ after logout
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'users.CustomUser'
 
+# ✅ Add this placeholder — update in your .env or directly in settings
+OPENAI_API_KEY = 'your-openai-key-here'  # Replace this after testing
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}

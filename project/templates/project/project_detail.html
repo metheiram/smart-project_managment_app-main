@@ -132,5 +132,26 @@
     <a href="{% url 'project:project_list' %}" class="back-link">&larr; Back to Project List</a>
 </div>
 
+<script>
+
+    fetch('/generate-ai-subtasks/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: new URLSearchParams({
+        'description': 'Build a task management system with real-time updates.',
+        'team_size': 4
+    })
+})
+.then(response => response.json())
+.then(data => {
+    console.log("Generated Subtasks:", data.subtasks);
+});
+
+</script>
+
+
 </body>
 </html>

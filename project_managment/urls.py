@@ -1,19 +1,17 @@
+from django.contrib import admin
 from django.urls import path, include
-from django.contrib import admin
-from data.views import dashboard,index
+from data.views import dashboard, index
 from django.contrib.auth import views as auth_views
-from django.contrib import admin
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='home'),
-    path('dashboard/', dashboard, name='dashboard'),
-    path('users/', include('users.urls')),
-     path('data/', include('data.urls')),
-    path('', dashboard, name='home'),
-    path('', include('project.urls')),
+    path('', index, name='home'),  # Homepage
+    path('dashboard/', dashboard, name='dashboard'),  # Dashboard view
+    path('users/', include('users.urls')),  # User module
+    path('data/', include('data.urls')),  # Data module
+    path('project/', include('project.urls')),  # Project module now under /project/
     path('login/', auth_views.LoginView.as_view(template_name='project/login.html'), name='login'),
-     path('tasks/', include('tasks.urls', namespace='tasks')), 
-     path('notifications/', include('notification.urls')),
-      path('calender/', include('calender.urls')),
-
+    path('tasks/', include('tasks.urls', namespace='tasks')),
+    path('notifications/', include('notification.urls')),
+    path('calender/', include('calender.urls')),
 ]

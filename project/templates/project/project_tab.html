@@ -134,6 +134,19 @@
         </div>
     </div>
 </div>
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const messages = document.getElementById("messages");
+    if (messages) {
+      setTimeout(() => {
+        messages.style.transition = "opacity 0.5s ease-out";
+        messages.style.opacity = "0";
+        setTimeout(() => {
+          messages.remove();
+        }, 500); // wait for transition to finish
+      }, 5000); // 5 seconds
+    }
+  });
+</script>
 </body>
 </html>

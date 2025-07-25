@@ -10,7 +10,7 @@ class Task(models.Model):
     # Fields for your Task model
     title = models.CharField(max_length=100)
     description = models.TextField()
-    project = models.ForeignKey('project.Project', on_delete=models.CASCADE) # Assuming Task belongs to Project
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks_from_data_app")# Assuming Task belongs to Project
    
 
     due_date = models.DateTimeField()
@@ -18,11 +18,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
-class Feedback(models.Model):
-    # Fields for your Feedback model
-    project = models.ForeignKey('project.Project', on_delete=models.CASCADE)
-    feedback_text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return f"Feedback on {self.project}"
