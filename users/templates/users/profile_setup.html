@@ -18,24 +18,33 @@
 </head>
 <body class="min-h-screen flex items-center justify-center px-4">
 
-  <div class="w-full max-w-2xl bg-gray-800 p-8 rounded-2xl shadow-xl fade-in">
+  <div class="w-full max-w-4xl bg-gray-800 p-8 rounded-2xl shadow-xl fade-in">
     <h2 class="text-3xl font-bold mb-6 text-center text-blue-400">Complete Your Profile</h2>
+
+    <!-- Show Django messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 text-white px-4 py-2 rounded {{ message.tags }} {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}bg-green-500{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
 
     <form method="POST" enctype="multipart/form-data" class="space-y-6">
       {% csrf_token %}
 
       <!-- Display Form Errors -->
       {% if user_form.errors %}
-        <div class="text-red-500">{{ user_form.errors }}</div>
+        <div class="text-red-400 text-sm">{{ user_form.errors }}</div>
       {% endif %}
       {% if profile_form.errors %}
-        <div class="text-red-500">{{ profile_form.errors }}</div>
+        <div class="text-red-400 text-sm">{{ profile_form.errors }}</div>
       {% endif %}
 
       <!-- Profile Picture Upload -->
       <div class="flex items-center space-x-6">
         <div class="shrink-0">
-          <img id="preview" class="h-20 w-20 object-cover rounded-full border-2 border-blue-500" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}https://via.placeholder.com/100{% endif %}" alt="Current Profile">
+          <img id="preview" class="h-20 w-20 object-cover rounded-full border-2 border-blue-500 shadow-lg" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'default-profile.png' %}{% endif %}" alt="Profile">
         </div>
         <label class="block">
           <span class="sr-only">Choose profile photo</span>
@@ -43,42 +52,53 @@
         </label>
       </div>
 
-      <!-- Username -->
-      <div>
-        <label class="block mb-1 font-semibold">Username</label>
-        <input type="text" name="username" value="{{ user_form.username.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="johndoe" />
-        {{ user_form.username.errors }}
+      <!-- Two-column layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Username -->
+        <div>
+          <label class="block mb-1 font-semibold">Username</label>
+          <input type="text" name="username" value="{{ user_form.username.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="johndoe" />
+          <div class="text-red-400 text-sm">{{ user_form.username.errors }}</div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block mb-1 font-semibold">Email</label>
+          <input type="email" name="email" value="{{ user_form.email.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="user@example.com" />
+          <div class="text-red-400 text-sm">{{ user_form.email.errors }}</div>
+        </div>
+
+        <!-- Department -->
+        <div>
+          <label class="block mb-1 font-semibold">Department / Team</label>
+          <input type="text" name="department" value="{{ profile_form.department.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Development, Design, QA..." />
+          <div class="text-red-400 text-sm">{{ profile_form.department.errors }}</div>
+        </div>
+
+        <!-- Skills -->
+        <div>
+          <label class="block mb-1 font-semibold">Skills</label>
+          <input type="text" name="skills" value="{{ profile_form.skills.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Python, UI/UX, Django..." />
+          <div class="text-red-400 text-sm">{{ profile_form.skills.errors }}</div>
+        </div>
+
+        <!-- Phone Number -->
+        <div>
+          <label class="block mb-1 font-semibold">Phone Number</label>
+          <input type="text" name="phone_number" value="{{ profile_form.phone_number.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+92xxxxxxxxx" />
+          <div class="text-red-400 text-sm">{{ profile_form.phone_number.errors }}</div>
+        </div>
+
+        <!-- Bio (spanning both columns) -->
+        <div class="md:col-span-2">
+          <label class="block mb-1 font-semibold">Bio</label>
+          <textarea name="bio" rows="4" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write something about yourself...">{{ profile_form.bio.value|default_if_none:'' }}</textarea>
+          <div class="text-red-400 text-sm">{{ profile_form.bio.errors }}</div>
+        </div>
       </div>
 
-      <!-- Email -->
-      <div>
-        <label class="block mb-1 font-semibold">Email</label>
-        <input type="email" name="email" value="{{ user_form.email.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="user@example.com" />
-        {{ user_form.email.errors }}
-      </div>
-
-      <!-- Department -->
-      <div>
-        <label class="block mb-1 font-semibold">Department / Team</label>
-        <input type="text" name="department" value="{{ profile_form.department.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Development, Design, QA..." />
-        {{ profile_form.department.errors }}
-      </div>
-
-      <!-- Skills -->
-      <div>
-        <label class="block mb-1 font-semibold">Skills</label>
-        <input type="text" name="skills" value="{{ profile_form.skills.value|default_if_none:'' }}" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Python, UI/UX, Django..." />
-        {{ profile_form.skills.errors }}
-      </div>
-
-      <!-- Bio -->
-      <div>
-        <label class="block mb-1 font-semibold">Bio</label>
-        <textarea name="bio" rows="4" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write something about yourself...">{{ profile_form.bio.value|default_if_none:'' }}</textarea>
-        {{ profile_form.bio.errors }}
-      </div>
-
-      <!-- Submit -->
+      <!-- Submit Button -->
       <div class="text-center">
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white font-semibold px-6 py-2 rounded-lg shadow-lg">Save & Continue</button>
       </div>

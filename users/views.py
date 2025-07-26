@@ -1,55 +1,38 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
-from .forms import UserUpdateForm, ProfileForm, PreferenceForm
-
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash  # For password change
 from .forms import (
-    CustomUserCreationForm,
-    CustomAuthenticationForm,
-    ProfileForm,
     UserUpdateForm,
-    PreferenceForm
+    ProfileForm,
+    PreferenceForm,
+    CustomUserCreationForm,
+    CustomAuthenticationForm
 )
-
 from .models import Profile
-
 
 User = get_user_model()
 
-
-
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            # Check if profile is complete
-            if (
-                hasattr(user, 'profile') and 
-                user.profile.bio.strip() and 
-                user.profile.skills.strip() and 
-                user.profile.department.strip()
-                                                ):
-                    return redirect('dashboard')
+            profile, created = Profile.objects.get_or_create(user=user)
+            bio_filled = profile.bio and profile.bio.strip()
+            skills_filled = profile.skills and profile.skills.strip()
+            department_filled = profile.department and profile.department.strip()
+            if bio_filled and skills_filled and department_filled:
+                return redirect('dashboard')
             else:
-                 return redirect('users:profile_setup')
-        else:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, "Invalid password.")
-            else:
-                messages.error(request, "Account does not exist. Please sign up.")
-                return redirect('users:signup')
-
-    return render(request, 'users/login.html', {'form': CustomAuthenticationForm()})
-
+                return redirect('users:profile_setup')
+        messages.error(request, "Invalid credentials.")
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'users/login.html', {'form': form})
 
 def signup_view(request):
     if request.method == 'POST':
@@ -66,101 +49,89 @@ def signup_view(request):
 
     return render(request, 'users/register.html', {'form': form})
 
-
 @login_required
 def profile_setup_view(request):
+    user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
-
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
             messages.success(request, "Profile setup completed successfully!")
-            return redirect('dashboard')  # Corrected here
+            return redirect('dashboard')
+        messages.error(request, "Please correct the errors below.")
     else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileForm(instance=request.user.profile)
-
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfileForm(instance=profile)
     return render(request, 'users/profile_setup.html', {
         'user_form': user_form,
         'profile_form': profile_form
     })
 
-
-
 def logout_view(request):
-    if request.method == "POST":
+    if request.method in ['POST', 'GET']:
         logout(request)
+        messages.success(request, "Logged out successfully.")
         return redirect('users:login')
-
-
-
 
 @login_required
 def settings_view(request):
+    def get_forms():
+        return {
+            'user_form': UserUpdateForm(request.POST or None, instance=request.user),
+            'profile_form': ProfileForm(request.POST or None, request.FILES or None, instance=request.user.profile),
+            'password_form': PasswordChangeForm(request.user, request.POST or None),
+            'preference_form': PreferenceForm(request.POST or None, instance=request.user),
+            'profile': request.user.profile
+        }
+
+    forms = get_forms()
+
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
-        password_form = PasswordChangeForm(request.user, request.POST)
-        preference_form = PreferenceForm(request.POST, instance=request.user)
-
         if 'update_profile' in request.POST:
-            if user_form.is_valid() and profile_form.is_valid():
-                user_form.save()
-                profile_form.save()
-                messages.success(request, "✅ Profile updated successfully.")
+            if forms['user_form'].is_valid() and forms['profile_form'].is_valid():
+                forms['user_form'].save()
+                forms['profile_form'].save()
+                messages.success(request, "Profile updated successfully.")
                 return redirect('users:settings')
-
+            messages.error(request, "Please correct the profile form errors.")
         elif 'change_password' in request.POST:
-            if password_form.is_valid():
-                user = password_form.save()
+            if forms['password_form'].is_valid():
+                user = forms['password_form'].save()
                 update_session_auth_hash(request, user)
-                messages.success(request, "🔒 Password changed successfully.")
+                messages.success(request, "Password changed successfully.")
                 return redirect('users:settings')
-            else:
-                messages.error(request, "❌ Please correct the error below.")
-
+            messages.error(request, "Please correct the password form errors.")
         elif 'save_preferences' in request.POST:
-            if preference_form.is_valid():
-                preference_form.save()
-                messages.success(request, "⚙️ Preferences saved successfully.")
+            if forms['preference_form'].is_valid():
+                forms['preference_form'].save()
+                messages.success(request, "Preferences saved successfully.")
                 return redirect('users:settings')
+            messages.error(request, "Please correct the preferences form errors.")
+        else:
+            messages.error(request, "Invalid form submission.")
 
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileForm(instance=request.user.profile)
-        password_form = PasswordChangeForm(request.user)
-        preference_form = PreferenceForm(instance=request.user)
-
-    return render(request, 'users/settings.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'password_form': password_form,
-        'preference_form': preference_form,
-    })
-
-
+    return render(request, 'users/settings.html', forms)
 
 @login_required
 def profile_view(request):
-    user = request.user
-    profile = user.profile
-
+    profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=user)
+        user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
-
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect('users:profile')
+        messages.error(request, "Please correct the form errors.")
     else:
-        user_form = UserUpdateForm(instance=user)
+        user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileForm(instance=profile)
-
     return render(request, 'users/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
+        'profile': profile
     })

@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from data.views import dashboard, index
 from django.contrib.auth import views as auth_views
-
+from django.conf.urls.static import static
+from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='home'),  # Homepage
@@ -14,4 +15,4 @@ urlpatterns = [
     path('tasks/', include('tasks.urls', namespace='tasks')),
     path('notifications/', include('notification.urls', namespace='notification')),
     path('calender/', include('calender.urls')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
