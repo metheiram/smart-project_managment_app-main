@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
 
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -23,7 +21,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(username, email, password, **extra_fields)
 
-
 class CustomUser(AbstractUser):
     user_id = models.AutoField(primary_key=True)
     preference_field_1 = models.CharField(max_length=100, blank=True, null=True)
@@ -32,7 +29,7 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(unique=True)
     notifications_enabled = models.BooleanField(default=True)
-    expertise = models.CharField(max_length=255, blank=True, null=True)  
+    expertise = models.CharField(max_length=255, blank=True, null=True)
     ROLE_CHOICES = (
         ('admin', 'Admin'),
         ('manager', 'Project Manager'),
@@ -43,23 +40,22 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
-    objects = CustomUserManager()  # This line must be aligned with the other fields
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.username
 
-
-
-# Profile Model
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True)
-    # notifications_enabled = models.BooleanField(default=True)
-    department = models.CharField(max_length=100,blank=False)
-    skills = models.CharField(max_length=200,blank=False)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        blank=True,
+        null=True
+    )
+    department = models.CharField(max_length=100, blank=True, null=True)
+    skills = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+
     def __str__(self):
-        return self.user.username
-
-
+        return f'{self.user.username} Profile'

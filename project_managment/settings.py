@@ -9,14 +9,14 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = Path('C:/Users/ghani/smart-project_managment_app-main')
-print("Template DIRS:", [BASE_DIR / 'templates'])
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-yr0zt-jvh8giyqzna!&yhpg62y$=obab+n26)ag^%%u77)62(-'
@@ -158,7 +158,7 @@ LOGIN_REDIRECT_URL = '/'           # ✅ after login, go to dashboard
 LOGOUT_REDIRECT_URL = '/login/'   # ✅ after logout
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'users.CustomUser'
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ✅ Add this placeholder — update in your .env or directly in settings
 OPENAI_API_KEY = 'your-openai-key-here'  # Replace this after testing
 
