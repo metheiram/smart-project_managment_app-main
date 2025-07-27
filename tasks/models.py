@@ -29,11 +29,7 @@ class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
 
-    assigned_to = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        related_name='task_assigned_to'
-    )
+   
 
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,

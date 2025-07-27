@@ -28,7 +28,7 @@
                 <ul class="space-y-4">
                     <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
                     <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
-                    <li><a href="{% url 'calender:calender' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Calendar</span></a></li>
+                    
 
                     <li><a href="{% url 'tasks:tasks_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Tasks</span></a></li>
                     <li><a href="{% url 'notification:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
@@ -51,14 +51,15 @@
                 <div>
                     <!-- <h1 class="text-2xl font-bold">Welcome, Dominic!</h1> -->
                     <h1 class="text-2xl text-white font-bold leading-tight transform transition-transform duration-500 ease-in-out hover:scale-105">
-                        Welcome To,<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Project Management tool</span>
+                        Welcome To,<span class="bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">User Dashboard</span>
                       </h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full  hover:bg-blue-700  hover:scale-110 transition-transform duration-300">Create</button>
-                    <a href="{% url 'users:profile' %}"><i class="fa fa-user">
-                    <img src="/user-profile.jpg" alt="Profile" class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-300 text-white">
-                </i></a>
+                    
+                    
+                    <a href="{% url 'users:settings' %}">
+    <img src="/user-profile.jpg" class="w-10 h-10 rounded-full hover:scale-110 transition-transform duration-300">
+</a>
                 </div>
               
             </header>
@@ -114,13 +115,8 @@
             </div>
 
             <!-- Notifications & Projects -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 ">
-                <!-- Notifications -->
-                <div class="col-span-1 bg-gray-800 shadow-md rounded-lg p-6">
-                    <h2 class="text-xl text-white font-bold mb-4">Notification</h2>
-                    <p class="text-white">Emily just sent you a task.</p>
-                   <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full mt-4 hover:bg-blue-700 hover:scale-110 transition-transform duration-300">See Now</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6 ">
+                
 
                 <!-- Projects Section -->
                 <div class="col-span-2 bg-gray-800 shadow-md rounded-lg p-6">

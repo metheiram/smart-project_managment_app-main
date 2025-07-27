@@ -14,5 +14,5 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='project/login.html'), name='login'),
     path('tasks/', include('tasks.urls', namespace='tasks')),
     path('notifications/', include('notification.urls', namespace='notification')),
-    path('calender/', include('calender.urls')),
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

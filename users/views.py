@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import user_passes_test
+
 from .forms import (
     UserUpdateForm,
     ProfileForm,
@@ -27,6 +29,8 @@ def login_view(request):
             department_filled = profile.department and profile.department.strip()
             if bio_filled and skills_filled and department_filled:
                 return redirect('dashboard')
+            if user.groups.filter(name='Admin').exists():
+                return redirect('admin_dashboard')
             else:
                 return redirect('users:profile_setup')
         messages.error(request, "Invalid credentials.")
@@ -135,3 +139,6 @@ def profile_view(request):
         'profile_form': profile_form,
         'profile': profile
     })
+
+
+

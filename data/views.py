@@ -2,7 +2,7 @@
 
 # Create your views here.
 
-
+from datetime import date
 from django.shortcuts import render, get_object_or_404,redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -31,11 +31,6 @@ def dashboard(request):
     return render(request, 'data/dashboard.html', {'projects': projects})
     
 
-
-
-
-def tasks_tab(request):
-    return render(request, 'tasks_tab.html')
 
 
 

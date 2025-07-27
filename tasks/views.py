@@ -121,3 +121,4 @@ def mark_task_complete(request, task_id):
     task.status = 'completed'
     task.save()
     return redirect('tasks:task_detail', pk=task_id)
+

@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from functools import wraps
+from django.contrib import messages
 
 def is_project_manager_or_admin(view_func):
     def wrapper(request, *args, **kwargs):
