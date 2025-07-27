@@ -26,7 +26,13 @@
             <!-- Navigation Links -->
             <nav>
                 <ul class="space-y-4">
-                    <li><a href="{% url 'data:dashboard' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Home</span></a></li>
+                     <li>
+  {% if is_admin %}
+    <a href="{% url 'users:admin_dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a>
+  {% else %}
+    <a href="{% url 'dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a>
+  {% endif %}
+</li>
                     <li><a href="{% url 'project:project_tab' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Project</span></a></li>
                     
 

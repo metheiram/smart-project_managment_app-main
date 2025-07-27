@@ -5,7 +5,11 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import user_passes_test
-
+from .decorators import is_admin,admin_required 
+from project.models import Project
+from tasks.models import Task
+from notification.models import Notification
+from django.conf import settings
 from .forms import (
     UserUpdateForm,
     ProfileForm,
@@ -23,19 +27,24 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+
+            if is_admin(user):
+                return redirect('users:admin_dashboard')
+
             profile, created = Profile.objects.get_or_create(user=user)
             bio_filled = profile.bio and profile.bio.strip()
             skills_filled = profile.skills and profile.skills.strip()
             department_filled = profile.department and profile.department.strip()
+
             if bio_filled and skills_filled and department_filled:
                 return redirect('dashboard')
-            if user.groups.filter(name='Admin').exists():
-                return redirect('admin_dashboard')
             else:
                 return redirect('users:profile_setup')
-        messages.error(request, "Invalid credentials.")
+        else:
+            messages.error(request, "Invalid username or password.")
     else:
         form = CustomAuthenticationForm()
+    
     return render(request, 'users/login.html', {'form': form})
 
 def signup_view(request):
@@ -140,5 +149,22 @@ def profile_view(request):
         'profile': profile
     })
 
+
+@admin_required
+def admin_dashboard(request):
+    # Example stats
+    total_users       = User.objects.count()
+    total_projects    = Project.objects.count()
+    open_tasks        = Task.objects.filter(status__in=['not_started','in_progress']).count()
+    unread_notifications = Notification.objects.filter(user=request.user, is_read=False).count()
+
+
+    context = {
+        'total_users': total_users,
+        'total_projects': total_projects,
+        'open_tasks': open_tasks,
+        'unread_notifications': unread_notifications,
+    }
+    return render(request, 'users/admin_dashboard.html', context)
 
 
