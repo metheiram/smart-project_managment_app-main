@@ -4,7 +4,8 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q
-
+from django.utils.dateparse import parse_date
+from django.http import JsonResponse 
 from .models import Project
 from .forms import ProjectForm, CustomUserCreationForm
 from .utils import update_expired_projects, update_pending_projects
@@ -211,3 +212,24 @@ def generate_subtasks_api(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Only POST method allowed"}, status=405)
+
+
+def projects_by_date(request):
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse({'error': 'Date parameter is required'}, status=400)
+
+    try:
+        date = parse_date(date_str)
+        projects = Project.objects.filter(due_date=date)
+        project_data = [
+            {
+                'title': project.title,
+                'description': project.description,
+                'status': project.status,
+            }
+            for project in projects
+        ]
+        return JsonResponse({'projects': project_data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

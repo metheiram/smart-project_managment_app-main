@@ -55,3 +55,64 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set the default task list for the current date
     updateTaskList(currentDay);
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const calendarDays = document.querySelectorAll('.calendar-day');
+  const taskList = document.getElementById('task-list');
+  const projectList = document.getElementById('project-list');
+
+  calendarDays.forEach(day => {
+    day.addEventListener('click', () => {
+      const selectedDate = day.getAttribute('data-date');
+
+      // Highlight selected date
+      calendarDays.forEach(d => d.classList.remove('bg-purple-700'));
+      day.classList.add('bg-purple-700');
+
+      // Fetch Tasks
+      fetch(`/tasks/by-date/?date=${selectedDate}`)
+        .then(res => res.json())
+        .then(data => {
+          taskList.innerHTML = '';
+          if (data.tasks?.length) {
+            data.tasks.forEach(task => {
+              const li = document.createElement('li');
+              li.classList.add('bg-gray-700', 'p-4', 'rounded', 'shadow');
+              li.innerHTML = `
+                <strong>${task.title}</strong><br/>
+                <span>${task.description}</span><br/>
+                <span class="text-sm text-gray-300">Status: ${task.status}</span><br/>
+                <span class="text-sm text-gray-400">Project: ${task.project}</span>`;
+              taskList.appendChild(li);
+            });
+          } else {
+            taskList.innerHTML = `<li class="text-gray-400">No tasks for this date.</li>`;
+          }
+        });
+
+      // Fetch Projects
+      fetch(`/projects/by-date/?date=${selectedDate}`)
+        .then(res => res.json())
+        .then(data => {
+          projectList.innerHTML = '';
+          if (data.projects?.length) {
+            data.projects.forEach(project => {
+              const div = document.createElement('div');
+              div.classList.add('flex', 'justify-between', 'items-center');
+              div.innerHTML = `
+                <div>
+                  <strong>${project.title}</strong>
+                  <p class="text-sm text-gray-300">${project.description}</p>
+                  <p class="text-sm text-gray-400">Status: ${project.status}</p>
+                </div>
+                <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-110 transition-transform duration-300">View</button>`;
+              projectList.appendChild(div);
+            });
+          } else {
+            projectList.innerHTML = `<div class="text-gray-400">No projects for this date.</div>`;
+          }
+        });
+    });
+  });
+});

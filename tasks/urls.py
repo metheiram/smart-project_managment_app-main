@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import tasks_by_date
 
 app_name = 'tasks'
 
@@ -12,4 +13,5 @@ path('tasks/<int:pk>/edit/', views.task_edit, name='task_edit'),
 path('tasks/<int:pk>/delete/', views.task_delete, name='task_delete'),
 path('task/<int:pk>/', views.task_detail, name='task_detail'),
   path('<int:task_id>/complete/', views.mark_task_complete, name='mark_complete'),
+  path('by-date/', views.tasks_by_date, name='tasks_by_date'),
 ]
