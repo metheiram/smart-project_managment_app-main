@@ -48,7 +48,15 @@
 
         <!-- Navigation Links -->
         <nav class="space-y-4">
-          <a href="{% url 'data:dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a>
+          <ul>
+           <li>
+  {% if is_admin %}
+    <a href="{% url 'users:admin_dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a>
+  {% else %}
+    <a href="{% url 'dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a>
+  {% endif %}
+</li>
+</ul>
           <a href="{% url 'project:project_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Project</a>
           
           <a href="{% url 'tasks:tasks_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Tasks</a>
