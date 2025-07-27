@@ -2,7 +2,7 @@ from django.urls import path,include
 from django.contrib import admin
 from .views import generate_subtasks
 from . import views
-
+from .views import projects_by_date
 app_name = 'project'
 
 urlpatterns = [
@@ -18,4 +18,6 @@ urlpatterns = [
      path('projects/create/', views.project_create, name='project_create'),
      path('generate-subtasks/', generate_subtasks, name='generate_subtasks'),
      path('generate-subtasks-api/', views.generate_subtasks_api, name='generate_subtasks_api'),
+
+      path('by-date/', views.projects_by_date, name='projects_by_date'),
 ]

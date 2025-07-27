@@ -29,11 +29,6 @@ def dashboard(request):
     else:
         projects = Project.objects.filter(assigned_users=request.user)
     return render(request, 'data/dashboard.html', {'projects': projects})
-    
-
-
-
-
 
 def settings(request):
     return render(request, 'settings.html')

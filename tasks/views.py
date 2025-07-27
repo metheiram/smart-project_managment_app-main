@@ -7,7 +7,8 @@ from django.contrib import messages
 from .decorators import is_project_manager_or_admin
 from project.ai_utils import assign_tasks, generate_subtasks
 import logging
-
+from django.utils.dateparse import parse_date
+from django.http import JsonResponse 
 logger = logging.getLogger(__name__)
 
 @login_required
@@ -122,3 +123,25 @@ def mark_task_complete(request, task_id):
     task.save()
     return redirect('tasks:task_detail', pk=task_id)
 
+@login_required
+def tasks_by_date(request):
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse({'error': 'Date parameter is required'}, status=400)
+
+    try:
+        date = parse_date(date_str)
+        tasks = Task.objects.filter(due_date=date)
+        # tasks = Task.objects.filter(due_date__date=date)
+        task_data = [
+            {
+                'title': task.title,
+                'description': task.description,
+                'status': task.status,
+                'project': task.project.title if task.project else "No Project",
+            }
+            for task in tasks
+        ]
+        return JsonResponse({'tasks': task_data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
