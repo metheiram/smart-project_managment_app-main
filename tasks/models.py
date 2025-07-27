@@ -23,13 +23,11 @@ class Task(models.Model):
         Project,
         on_delete=models.CASCADE,
         related_name="tasks_from_tasks_app",
-        default=1  # ✅ Default Project ID (make sure ID=1 exists)
+        default=1  # ✅ Make sure project with ID=1 exists
     )
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-
-   
 
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -40,21 +38,25 @@ class Task(models.Model):
     )
 
     start_date = models.DateField(null=True, blank=True)
-    project_title = models.CharField(max_length=255,null=True, blank=True)  # 👈 Add this field
     due_date = models.DateField(null=True, blank=True)
+
+    project_title = models.CharField(max_length=255, null=True, blank=True)
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='low')
     progress = models.PositiveIntegerField(default=0)
     commands = models.TextField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
+
     assigned_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='assigned_tasks', blank=True)
+
     def is_overdue(self):
         return self.due_date and self.due_date < timezone.now().date() and self.status != 'completed'
 
-
     def auto_update_status(self):
         if self.status not in ['completed', 'overdue']:
-            if self.progress == 100:
+            if self.progress >= 100:
                 self.status = 'completed'
             elif self.is_overdue():
                 self.status = 'overdue'
@@ -62,9 +64,10 @@ class Task(models.Model):
                 self.status = 'in_progress'
             else:
                 self.status = 'not_started'
-            self.save()
+
+    def save(self, *args, **kwargs):
+        self.auto_update_status()  # ✅ Auto-update status before saving
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
-
-

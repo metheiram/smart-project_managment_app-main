@@ -7,6 +7,8 @@ from django.contrib import messages
 from .decorators import is_project_manager_or_admin
 from project.ai_utils import assign_tasks, generate_subtasks
 import logging
+from project.ai_utils import get_best_user_for_task
+
 from django.utils.dateparse import parse_date
 from django.http import JsonResponse 
 logger = logging.getLogger(__name__)
