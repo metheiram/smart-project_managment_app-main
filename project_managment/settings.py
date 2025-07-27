@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django.contrib.humanize',
     'notification',  # Ensure this is included
-    'calender',
+
 ]
 
 MIDDLEWARE = [

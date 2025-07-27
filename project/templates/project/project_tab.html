@@ -18,7 +18,7 @@
                 <ul class="space-y-6">
                     <li><a href="{% url 'data:dashboard' %}" class="block hover:bg-purple-800 p-2 rounded-md">Home</a></li>
                     <li><a href="{% url 'project:project_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md font-semibold">Projects</a></li>
-                    <li><a href="{% url 'calender:calender' %}" class="block hover:bg-purple-800 p-2 rounded-md">Calendar</a></li>
+                    
                     <li><a href="{% url 'tasks:tasks_tab' %}" class="block hover:bg-purple-800 p-2 rounded-md">Tasks</a></li>
                     <li><a href="{% url 'notification:notification' %}" class="flex items-center space-x-4 hover:bg-purple-800 p-2 rounded-md"><span>Notifications</span></a></li>
                     <li><a href="{% url 'users:settings' %}" class="block hover:bg-purple-800 p-2 rounded-md">Settings</a></li>
@@ -78,11 +78,20 @@
                     </div>
                 </form>
 
-                <a href="{% url 'project:project_create' %}">
+                <!-- <a href="{% url 'project:project_create' %}">
                     <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-110 transition-transform duration-300">
                         Create
                     </button>
-                </a>
+                </a> -->
+
+
+                {% if perms.project.add_project %}
+  <a href="{% url 'project:project_create' %}">
+    <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-110 transition-transform duration-300">Create</button>
+  </a>
+{% endif %}
+
+
             </div>
         </div>
 
@@ -110,13 +119,19 @@
                         </div>
                     </div>
                     <div class="flex justify-end space-x-2 mt-2">
-                        <a href="{% url 'project:project_edit' project.pk %}" class="flex items-center bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- <a href="{% url 'project:project_edit' project.pk %}" class="flex items-center bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"> -->
+                            {# Edit button – only if user has change_project permission #}
+{% if perms.project.change_project %}
+  <a href="{% url 'project:project_edit' project.pk %}" class="flex items-center bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
-                            Edit
-                        </a>
-                        <form action="{% url 'project:project_delete' project.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this project?');">
+    <button class="…">Edit</button>
+  
+                            
+                         </a>
+{% endif %}
+                        <!-- <form action="{% url 'project:project_delete' project.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this project?');">
                             {% csrf_token %}
                             <button type="submit" class="flex items-center bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,7 +139,21 @@
                                 </svg>
                                 Delete
                             </button>
-                        </form>
+                        </form> -->
+
+
+                        {% if perms.project.delete_project %}
+  <form action="{% url 'project:project_delete' project.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this project?');">
+      {% csrf_token %}
+      <button type="submit" class="flex items-center bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-8 0h10"/>
+          </svg>
+          Delete
+      </button>
+  </form>
+{% endif %}
+
                     </div>
                 </div>
                 {% endfor %}
