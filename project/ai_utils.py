@@ -91,3 +91,21 @@ No explanation.
         print("⚠️ Failed to parse assignments:\n", content)
         print("Error:", e)
         return {}
+def get_best_user_for_task(task_title):
+    """
+    Basic logic: Select the user with the fewest tasks assigned.
+    """
+    users = User.objects.all()
+    if not users.exists():
+        return None
+
+    best_user = None
+    min_tasks = float('inf')
+
+    for user in users:
+        task_count = Task.objects.filter(assignee=user).count()
+        if task_count < min_tasks:
+            best_user = user
+            min_tasks = task_count
+
+    return best_user

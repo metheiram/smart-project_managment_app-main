@@ -3,87 +3,241 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Task</title>
+    <title>Create Task | TaskFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+            --card: #1e293b;
+        }
+        body {
+            background: radial-gradient(circle at center, var(--darker), var(--dark));
+            color: var(--light);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(2, 6, 23, 0.3);
+        }
+        .form-input {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .progress-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(100, 116, 139, 0.3);
+        }
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(2, 6, 23, 0.3);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-
-    <div class="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Create New Task</h1>
-
-        <form method="POST" class="space-y-4">
-            {% csrf_token %}
-            
-            <!-- Title -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Title</label>
-                {{ form.title|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
+<body class="font-['Inter'] min-h-screen flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-2xl rounded-xl overflow-hidden">
+        <!-- Header -->
+        <div class="border-b border-gray-800 p-6 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-lg animate-float">
+                    <i class="fas fa-tasks text-white text-xl"></i>
+                </div>
+                <h1 class="text-xl font-semibold">Create New Task</h1>
             </div>
+            <a href="#" class="text-gray-400 hover:text-gray-200 transition-colors">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
 
-            <!-- Description -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Description</label>
-                {{ form.description|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+        <!-- Form Content -->
+        <div class="p-6 space-y-6">
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Title & Status -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Task Title</label>
+                        {% render_field form.title class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" placeholder="What needs to be done?" %}
+                    </div>
 
-            <!-- Assignee (single user) -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Assignee</label>
-                {{ form.assignee|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Status</label>
+                        <div class="relative">
+                            {% render_field form.status class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Assigned Users (multiple selection) -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Assigned Users</label>
-                {{ form.assigned_users|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                    {% render_field form.description class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" rows="3" placeholder="Add details about this task..." %}
+                </div>
 
-            <!-- Start Date -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Start Date</label>
-                {{ form.start_date|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                <!-- Assignees -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Assignee -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Assignee</label>
+                        <div class="relative">
+                            {% render_field form.assignee class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Due Date -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Due Date</label>
-                {{ form.due_date|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                    <!-- Team Members -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Team Members</label>
+                        <div class="relative">
+                            {% render_field form.assigned_users class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Status -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Status</label>
-                {{ form.status|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                <!-- Dates -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Start Date</label>
+                        <div class="relative">
+                            {% render_field form.start_date class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-calendar text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Priority -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Priority</label>
-                {{ form.priority|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                    <!-- Due Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Due Date</label>
+                        <div class="relative">
+                            {% render_field form.due_date class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-calendar-check text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Progress -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Progress (%)</label>
-                {{ form.progress|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                <!-- Priority & Progress -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Priority -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Priority</label>
+                        <div class="relative">
+                            {% render_field form.priority class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-bolt text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Commands -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">Commands</label>
-                {{ form.commands|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400" }}
-            </div>
+                    <!-- Progress -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Progress</label>
+                        <div class="flex items-center space-x-4">
+                            {% render_field form.progress class="progress-slider w-full" type="range" min="0" max="100" %}
+                            <span id="progressValue" class="text-gray-300 font-medium w-12 text-center">0%</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Submit Button -->
-            <div class="text-center">
-                <button type="submit"
-                    class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300">
-                    Save Task
-                </button>
-            </div>
-        </form>
+                <!-- Commands -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Commands</label>
+                    {% render_field form.commands class="form-input w-full px-4 py-3 rounded-lg focus:outline-none font-mono text-sm" rows="2" placeholder="Add any special commands or notes..." %}
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-800">
+                    <a href="#" class="px-4 py-2.5 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-4 py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg">
+                        <i class="fas fa-plus mr-2"></i> Create Task
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Progress slider value display
+        const progressSlider = document.querySelector('input[type="range"]');
+        const progressValue = document.getElementById('progressValue');
+        
+        progressSlider.addEventListener('input', function() {
+            progressValue.textContent = this.value + '%';
+        });
+
+        // Initialize date pickers
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            if (!input.value) {
+                const today = new Date().toISOString().split('T')[0];
+                input.value = today;
+            }
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const startDate = new Date(document.getElementById('id_start_date').value);
+            const dueDate = new Date(document.getElementById('id_due_date').value);
+            
+            if (startDate && dueDate && startDate > dueDate) {
+                alert('Due date must be after start date');
+                e.preventDefault();
+            }
+        });
+    });
+    </script>
 </body>
 </html>
