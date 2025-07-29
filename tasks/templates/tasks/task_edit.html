@@ -46,9 +46,7 @@
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 font-['Inter'] min-h-screen flex items-center justify-center p-6">
-
     <div class="glass-card w-full max-w-2xl rounded-2xl overflow-hidden">
-        <!-- Header -->
         <div class="border-b border-gray-800 p-6 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-lg">
@@ -60,21 +58,15 @@
                 <i class="fas fa-times"></i>
             </a>
         </div>
-
-        <!-- Form Content -->
         <div class="p-6">
             <form method="POST" class="space-y-6">
                 {% csrf_token %}
-                
-                <!-- Title & Status -->
+
                 <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Title -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Title</label>
                         {% render_field form.title class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" placeholder="Task title" %}
                     </div>
-
-                    <!-- Status -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Status</label>
                         <div class="relative">
@@ -86,23 +78,39 @@
                     </div>
                 </div>
 
-                <!-- Description -->
+                <!-- ✅ Project Field -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Project</label>
+                    {% render_field form.project class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                    {% if form.project.errors %}
+                        <p class="text-red-400 text-sm mt-1">{{ form.project.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-2">Description</label>
                     {% render_field form.description class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" rows="3" placeholder="Task description..." %}
                 </div>
 
-                <!-- Assigned Users -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Team Members</label>
-                    <div class="relative">
-                        {% render_field form.assigned_users class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Assignee</label>
+                        <div class="relative">
+                            {% render_field form.assignee class="form-input w-full px-4 py-3 rounded-lg focus:outline-none appearance-none" %}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Team Members</label>
+                        <div class="relative">
+                            {% render_field form.team_members class="form-input w-full px-4 py-3 rounded-lg focus:outline-none" %}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Dates -->
                 <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Start Date -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Start Date</label>
                         <div class="relative">
@@ -112,8 +120,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Due Date -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Due Date</label>
                         <div class="relative">
@@ -125,9 +131,7 @@
                     </div>
                 </div>
 
-                <!-- Priority & Progress -->
                 <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Priority -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Priority</label>
                         <div class="relative">
@@ -137,24 +141,20 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Progress -->
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Progress</label>
                         <div class="flex items-center space-x-4">
                             {% render_field form.progress class="w-full rounded-lg bg-gray-800/50" type="range" min="0" max="100" %}
-                            <span id="progressValue" class="text-gray-300 font-medium w-12 text-center">{{ form.progress.value }}%</span>
+                            <span id="progressValue" class="text-gray-300 font-medium w-12 text-center">{{ form.progress.value|default:0 }}%</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Commands -->
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-2">Commands</label>
                     {% render_field form.commands class="form-input w-full px-4 py-3 rounded-lg focus:outline-none font-mono text-sm" rows="2" placeholder="Add any special commands or notes..." %}
                 </div>
 
-                <!-- Form Actions -->
                 <div class="flex justify-between items-center pt-6 border-t border-gray-800/50">
                     <a href="{% url 'tasks:tasks_tab' %}" class="text-cyan-400 hover:text-cyan-300 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i> Cancel
@@ -167,20 +167,15 @@
         </div>
     </div>
 
-    <!-- Secure JavaScript -->
     <script nonce="{{ request.csp_nonce }}">
     document.addEventListener("DOMContentLoaded", function() {
-        // Update progress value display
         const progressSlider = document.querySelector('input[type="range"]');
         const progressValue = document.getElementById('progressValue');
-        
         if (progressSlider && progressValue) {
             progressSlider.addEventListener('input', function() {
                 progressValue.textContent = this.value + '%';
             });
         }
-
-        // Initialize date pickers
         const dateInputs = document.querySelectorAll('input[type="date"]');
         dateInputs.forEach(input => {
             if (!input.value && input.name.includes('start')) {
@@ -188,14 +183,11 @@
                 input.value = today;
             }
         });
-
-        // Form validation
         const form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function(e) {
                 const startDate = document.getElementById('id_start_date');
                 const dueDate = document.getElementById('id_due_date');
-                
                 if (startDate && dueDate && startDate.value && dueDate.value && new Date(startDate.value) > new Date(dueDate.value)) {
                     alert('Due date must be after start date');
                     e.preventDefault();
@@ -205,12 +197,11 @@
     });
     </script>
 
-    <!-- Select2 for better multi-select -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script nonce="{{ request.csp_nonce }}">
     $(document).ready(function() {
-        $('#id_assigned_users').select2({
+        $('#id_team_members').select2({
             placeholder: "Select team members",
             width: '100%',
             theme: 'dark'

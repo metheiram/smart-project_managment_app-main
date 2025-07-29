@@ -8,7 +8,8 @@ from .decorators import is_project_manager_or_admin
 from project.ai_utils import assign_tasks, generate_subtasks
 import logging
 from project.ai_utils import get_best_user_for_task
-
+from project.decorators import is_project_manager_or_admin  
+from project.ai_utils import get_best_user_for_task
 from django.utils.dateparse import parse_date
 from django.http import JsonResponse 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def task_list(request):
             Q(title__icontains=query) | 
             Q(description__icontains=query) |
             Q(project__title__icontains=query) |
-            Q(assigned_to__username__icontains=query)
+            Q(assignee__username__icontains=query)
         ).distinct()
 
     if status_filter and status_filter != 'all':
@@ -38,7 +39,6 @@ def task_list(request):
     }
 
     return render(request, 'tasks/TaskTab.html', context)
-
 @login_required
 @is_project_manager_or_admin
 def task_create(request):
@@ -46,17 +46,60 @@ def task_create(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
+            project = task.project
+
+            # Debug project
+            print("📌 Project selected:", project)
+            print("📌 Project start:", project.start_date, "end:", project.end_date)
+            print("🧪 Final Task Info:")
+            print("Title:", task.title)
+            print("Due date:", task.due_date)
+            print("Assignee:", task.assignee)
+
+            # Set due_date
+            if not task.due_date and project.start_date and project.end_date:
+                duration = (project.end_date - project.start_date).days
+                print("📌 Duration in days:", duration)
+                if duration > 0:
+                    offset_days = int(duration * 0.75)
+                    due_datetime = timezone.datetime.combine(
+                        project.start_date, timezone.datetime.min.time()
+                    ) + timezone.timedelta(days=offset_days)
+                    task.due_date = timezone.make_aware(due_datetime)
+                    print("✅ Auto-set due_date:", task.due_date)
+                else:
+                    print("❌ Invalid project duration")
+
+            # AI Assignee
             if not task.assignee:
-                best_user = get_best_user_for_task(task.title)
-                if best_user:
-                    task.assignee = best_user
+                try:
+                    best_user = get_best_user_for_task(task.title)
+                    print("✅ AI selected user:", best_user)
+                    if best_user:
+                        task.assignee = best_user
+                except Exception as e:
+                    print("❌ AI error:", str(e))
+
+            print("📝 Final task before save:")
+            print("Title:", task.title)
+            print("Due date:", task.due_date)
+            print("Assignee:", task.assignee)
+
             task.save()
             form.save_m2m()
-            messages.success(request, f"Task created! Assigned to {task.assignee.username if task.assignee else 'nobody'}")
+            messages.success(request, f"Task created! Assigned to {task.assignee.username if task.assignee else 'No one'}")
             return redirect('tasks:tasks_tab')
+        else:
+            print("❌ Form errors:", form.errors)
+            messages.error(request, "Please correct the errors in the form.")
     else:
         form = TaskForm()
+
     return render(request, 'tasks/task_create.html', {'form': form})
+
+
+
+
 
 @login_required
 @is_project_manager_or_admin
@@ -68,9 +111,12 @@ def task_edit(request, pk):
             form.save()
             messages.success(request, "Task updated successfully!")
             return redirect('tasks:tasks_tab')
+        else:
+            messages.error(request, "Form validation failed. Please correct the errors.")
     else:
         form = TaskForm(instance=task)
-    return render(request, 'tasks/task_edit.html', {'form': form})
+    
+    return render(request, 'tasks/task_edit.html', {'form': form, 'task': task})
 
 @login_required
 def tasks_tab(request):
@@ -88,7 +134,8 @@ def tasks_tab(request):
             Q(title__icontains=query) | 
             Q(description__icontains=query) |
             Q(project__title__icontains=query) |
-            Q(assigned_to__username__icontains=query)
+            Q(assignee__username__icontains=query)
+
         ).distinct()
         logger.info(f"After search query '{query}', {tasks.count()} tasks remain")
 

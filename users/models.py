@@ -54,7 +54,8 @@ class Profile(models.Model):
         null=True
     )
     department = models.CharField(max_length=100, blank=True, null=True)
-    skills = models.CharField(max_length=255, blank=True, null=True)
+    expertise = models.CharField(max_length=255, default="general")
+    skills = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):

@@ -80,6 +80,7 @@ def project_create(request):
                 subtasks = generate_subtasks(project.description, team_size, project.title, project.due_date)
                 assignments = assign_tasks(team_expertise, project.description, team_size, project.title, project.due_date)
 
+
                 for subtask in subtasks:
                     task = Task.objects.create(
                         title=subtask["title"],
