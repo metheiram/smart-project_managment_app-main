@@ -9,38 +9,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/project_tab.css' %}">
     <style>
-        body {
-            overflow: hidden;
-        }
-        .status-badge {
-            @apply px-3 py-1 rounded-full text-xs font-medium;
-        }
-        .status-not_started {
-            @apply bg-gray-600/30 text-gray-300;
-        }
-        .status-in_progress {
-            @apply bg-blue-600/30 text-blue-400;
-        }
-        .status-completed {
-            @apply bg-green-600/30 text-green-400;
-        }
-        .status-overdue {
-            @apply bg-red-600/30 text-red-400;
-        }
+        body { overflow: hidden; }
+        .status-badge { @apply px-3 py-1 rounded-full text-xs font-medium; }
+        .status-not_started { @apply bg-gray-600/30 text-gray-300; }
+        .status-in_progress { @apply bg-blue-600/30 text-blue-400; }
+        .status-completed { @apply bg-green-600/30 text-green-400; }
+        .status-overdue { @apply bg-red-600/30 text-red-400; }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-sans">
-
 <div class="flex h-screen overflow-hidden">
-    <!-- Enhanced Sidebar -->
     <aside class="bg-gray-800 text-white w-64 p-6 flex flex-col justify-between h-full fixed left-0 top-0 bottom-0 border-r border-gray-700">
         <div>
-           <div class="mb-8 flex flex-col items-center">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mb-3 hover:rotate-12 transition-transform">
-          <i class="fas fa-rocket text-2xl text-white"></i>
-        </div>
-        <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Projora</h1>
-      </div>
+            <div class="mb-8 flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mb-3 hover:rotate-12 transition-transform">
+                    <i class="fas fa-rocket text-2xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">Projora</h1>
+            </div>
             <nav>
                 <ul class="space-y-3">
                     <li>
@@ -96,8 +82,6 @@
             </div>
         </div>
     </aside>
-
-    <!-- Main Content -->
     <div class="ml-64 w-[calc(100%-16rem)] overflow-y-auto h-screen p-8">
         {% if messages %}
         <div id="success-message" class="mb-6">
@@ -118,26 +102,22 @@
             }, 3000);
         </script>
         {% endif %}
-
-        <!-- Enhanced Header -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <h1 class="text-2xl font-bold flex items-center">
                 <i class="fas fa-tasks mr-3 text-purple-400"></i>
                 Task List
             </h1>
             <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto">
-                <!-- Search & Filter -->
                 <form method="GET" action="{% url 'tasks:tasks_tab' %}" class="flex flex-wrap gap-4 w-full">
                     <div class="relative flex-1 min-w-[200px]">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
                         </div>
-                        <input type="text" name="q" placeholder="Search tasks..." value="{{ request.GET.q }}" 
+                        <input type="text" name="q" placeholder="Search tasks..." value="{{ request.GET.q }}"
                                class="bg-gray-800 border border-gray-700 text-white placeholder-gray-400 rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full pl-10 p-2.5">
                     </div>
-
                     <div class="relative">
-                        <select name="status" onchange="this.form.submit()" 
+                        <select name="status" onchange="this.form.submit()"
                                 class="bg-gray-800 border border-gray-700 text-white rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 appearance-none">
                             <option value="all" {% if status_filter == 'all' or not status_filter %}selected{% endif %}>All Tasks</option>
                             <option value="not_started" {% if status_filter == 'not_started' %}selected{% endif %}>Not Started</option>
@@ -150,7 +130,6 @@
                         </div>
                     </div>
                 </form>
-
                 {% if user.role == 'admin' or user.role == 'manager' %}
                     <a href="{% url 'tasks:task_create' %}" class="w-full md:w-auto">
                         <button class="bg-gradient-to-r from-cyan-400 to-purple-500 text-white px-4 py-2 rounded-full hover:scale-105 transition-transform flex items-center w-full justify-center md:w-auto">
@@ -161,8 +140,6 @@
                 {% endif %}
             </div>
         </div>
-
-        <!-- Enhanced Task Table -->
         <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
             <div class="relative overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-400">
@@ -223,14 +200,15 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    {% if task.assignee and task.assignee.profile and task.assignee.profile.image %}
-                                        <img src="{{ task.assignee.profile.image.url }}" class="w-8 h-8 rounded-full mr-2" alt="assignee">
-                                    {% else %}
+                                    {% if task.assignee %}
                                         <div class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold mr-2">
-                                            {% if task.assignee %}{{ task.assignee.username|slice:":1" }}{% else %}?{% endif %}
+                                            {{ task.assignee.username|slice:":1" }}
                                         </div>
+                                        <span>{{ task.assignee.username }}</span>
+                                    {% else %}
+                                        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs font-bold mr-2">?</div>
+                                        <span class="text-gray-500 italic">Unassigned</span>
                                     {% endif %}
-                                    <span>{{ task.assignee.username|default:"Unassigned" }}</span>
                                 </div>
                             </td>
                             {% if user.role == 'admin' or user.role == 'manager' %}
@@ -239,7 +217,7 @@
                                     <a href="{% url 'tasks:task_edit' task.pk %}" class="text-blue-400 hover:text-blue-300 transition-colors" onclick="event.stopPropagation();">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{% url 'tasks:task_delete' task.pk %}" class="text-red-400 hover:text-red-300 transition-colors" 
+                                    <a href="{% url 'tasks:task_delete' task.pk %}" class="text-red-400 hover:text-red-300 transition-colors"
                                        onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this task?')">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
@@ -270,7 +248,6 @@
         </div>
     </div>
 </div>
-
 <script>
     document.querySelectorAll('.clickable-row').forEach(row => {
         row.addEventListener('click', () => {

@@ -12,3 +12,5 @@ def save_user_profile(sender, instance, created, **kwargs):
         instance.profile.save()
     except Profile.DoesNotExist:
         Profile.objects.create(user=instance)
+
+
