@@ -1,29 +1,32 @@
+# ✅ views.py (Completely Modified with Fixes for Due Date and Assignee)
+
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+from django.utils import timezone
+from django.http import JsonResponse
+
 from .models import Task
 from .forms import TaskForm
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.contrib import messages
 from .decorators import is_project_manager_or_admin
-from project.ai_utils import assign_tasks, generate_subtasks
+from project.decorators import is_project_manager_or_admin
+from project.ai_utils import get_best_user_for_task
+from tasks.utils import get_evenly_distributed_due_date  # ✅ NEW
+
 import logging
-from project.ai_utils import get_best_user_for_task
-from project.decorators import is_project_manager_or_admin  
-from project.ai_utils import get_best_user_for_task
-from django.utils.dateparse import parse_date
-from django.http import JsonResponse 
 logger = logging.getLogger(__name__)
 
 @login_required
 def task_list(request):
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
-
     tasks = Task.objects.all()
 
     if query:
         tasks = tasks.filter(
-            Q(title__icontains=query) | 
+            Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(project__title__icontains=query) |
             Q(assignee__username__icontains=query)
@@ -37,8 +40,9 @@ def task_list(request):
         'query': query,
         'status_filter': status_filter or 'all',
     }
+    return render(request, 'tasks/task_tab.html', context)
 
-    return render(request, 'tasks/TaskTab.html', context)
+
 @login_required
 @is_project_manager_or_admin
 def task_create(request):
@@ -48,58 +52,32 @@ def task_create(request):
             task = form.save(commit=False)
             project = task.project
 
-            # Debug project
-            print("📌 Project selected:", project)
-            print("📌 Project start:", project.start_date, "end:", project.end_date)
-            print("🧪 Final Task Info:")
-            print("Title:", task.title)
-            print("Due date:", task.due_date)
-            print("Assignee:", task.assignee)
-
-            # Set due_date
-            if not task.due_date and project.start_date and project.end_date:
-                duration = (project.end_date - project.start_date).days
-                print("📌 Duration in days:", duration)
-                if duration > 0:
-                    offset_days = int(duration * 0.75)
-                    due_datetime = timezone.datetime.combine(
-                        project.start_date, timezone.datetime.min.time()
-                    ) + timezone.timedelta(days=offset_days)
-                    task.due_date = timezone.make_aware(due_datetime)
-                    print("✅ Auto-set due_date:", task.due_date)
-                else:
-                    print("❌ Invalid project duration")
-
-            # AI Assignee
+            # ✅ AI Assignee
             if not task.assignee:
                 try:
                     best_user = get_best_user_for_task(task.title)
-                    print("✅ AI selected user:", best_user)
                     if best_user:
                         task.assignee = best_user
+                        logger.info(f"✅ Assigned to {best_user.username}")
                 except Exception as e:
-                    print("❌ AI error:", str(e))
+                    logger.error(f"❌ AI Error: {e}")
 
-            print("📝 Final task before save:")
-            print("Title:", task.title)
-            print("Due date:", task.due_date)
-            print("Assignee:", task.assignee)
+            # ✅ Correctly calculate due date between project.start_date and end_date
+            if not task.due_date:
+                total_tasks = Task.objects.filter(project=project).count()
+                task_index = total_tasks  # current task will be the next
+                task.due_date = get_evenly_distributed_due_date(project, task_index, total_tasks + 1)
 
             task.save()
             form.save_m2m()
             messages.success(request, f"Task created! Assigned to {task.assignee.username if task.assignee else 'No one'}")
             return redirect('tasks:tasks_tab')
         else:
-            print("❌ Form errors:", form.errors)
             messages.error(request, "Please correct the errors in the form.")
     else:
         form = TaskForm()
 
     return render(request, 'tasks/task_create.html', {'form': form})
-
-
-
-
 
 @login_required
 @is_project_manager_or_admin
@@ -115,42 +93,57 @@ def task_edit(request, pk):
             messages.error(request, "Form validation failed. Please correct the errors.")
     else:
         form = TaskForm(instance=task)
-    
+
     return render(request, 'tasks/task_edit.html', {'form': form, 'task': task})
+
 
 @login_required
 def tasks_tab(request):
     query = request.GET.get('q')
     status_filter = request.GET.get('status')
 
-    tasks = Task.objects.all()
-    logger.info(f"Retrieved {tasks.count()} tasks before filtering")
+    user = request.user
 
+    # Initial queryset with prefetching
+    tasks = Task.objects.select_related('assignee', 'project').all()
+
+    # --- Filter based on user role ---
+    if user.role == 'admin':
+        # Admin sees all tasks
+        tasks = tasks
+    elif user.role == 'manager':
+        # Project Manager sees tasks only for their projects
+        tasks = tasks.filter(project__created_by=user)
+    else:
+        # Normal user sees only assigned tasks
+        tasks = tasks.filter(assignee=user)
+
+    # --- Auto update status ---
     for task in tasks:
         task.auto_update_status()
 
+    # --- Search filter ---
     if query:
         tasks = tasks.filter(
-            Q(title__icontains=query) | 
+            Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(project__title__icontains=query) |
             Q(assignee__username__icontains=query)
-
         ).distinct()
-        logger.info(f"After search query '{query}', {tasks.count()} tasks remain")
 
+    # --- Status filter ---
     if status_filter and status_filter != 'all':
         tasks = tasks.filter(status=status_filter)
-        logger.info(f"After status filter '{status_filter}', {tasks.count()} tasks remain")
 
     context = {
         'tasks': tasks,
         'query': query,
         'status_filter': status_filter or 'all',
     }
-
-    logger.info(f"Final tasks sent to template: {tasks.count()}")
     return render(request, 'tasks/tasks_tab.html', context)
+
+
+
 
 @login_required
 @is_project_manager_or_admin
@@ -160,9 +153,12 @@ def task_delete(request, pk):
     messages.success(request, "Task deleted successfully!")
     return redirect('tasks:tasks_tab')
 
+
+@login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'tasks/task_detail.html', {'task': task})
+
 
 @login_required
 def mark_task_complete(request, task_id):
@@ -171,6 +167,7 @@ def mark_task_complete(request, task_id):
     task.status = 'completed'
     task.save()
     return redirect('tasks:task_detail', pk=task_id)
+
 
 @login_required
 def tasks_by_date(request):
@@ -181,7 +178,6 @@ def tasks_by_date(request):
     try:
         date = parse_date(date_str)
         tasks = Task.objects.filter(due_date=date)
-        # tasks = Task.objects.filter(due_date__date=date)
         task_data = [
             {
                 'title': task.title,
