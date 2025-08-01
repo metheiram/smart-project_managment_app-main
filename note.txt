@@ -1,6 +1,0 @@
-always read after pull the changes
-1. in /dashboard/project/ 
-work on project in this module simply add new project details 
-
-2. in /dashboard/task/
-add and assing new task and chk task details 
